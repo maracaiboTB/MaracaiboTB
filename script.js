@@ -88,7 +88,7 @@ i:"queque-seco.jpg"
 c:"dulce",
 n:"Prusianos",
 d:"Repostería dulce tradicional.",
-p:"₡1,050",
+p:"₡1,200",
 i:"Prusianos.jpg"
 }
 
