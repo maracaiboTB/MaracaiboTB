@@ -86,10 +86,10 @@ i:"queque-seco.jpg"
 
 {
 c:"dulce",
-n:"Moro",
+n:"Prusianos",
 d:"Repostería dulce tradicional.",
-p:"₡1,150",
-i:"moro.jpg"
+p:"₡1,050",
+i:"Prusianos.jpg"
 }
 
 ];
