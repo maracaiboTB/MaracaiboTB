@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Panadería Maracaibo – Tibás</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="top-bar">
+🥐 Panadería Maracaibo – Tibás · WhatsApp 6389-0600
+</div>
+
+<header>
+
+<div class="brand">
+
+<img src="./img/logo-panaderia.jpg" class="logo-img">
+
+<div>
+<h1>Panadería Maracaibo</h1>
+<small>Menú digital profesional</small>
+</div>
+
+</div>
+
+<a href="#" class="header-btn">
+Ver promociones
+</a>
+
+</header>
+<!-- CARRITO -->
+
+<div class="cart-icon" onclick="toggleCart()">
+
+🛒
+
+<span id="cart-count">
+0
+</span>
+
+</div>
+
+<div class="cart-panel" id="cartPanel">
+
+<!-- HEADER -->
+
+<div class="cart-header">
+
+<h2>
+Tu carrito
+</h2>
+
+<span onclick="toggleCart()">
+×
+</span>
+
+</div>
+
+<!-- ITEMS -->
+
+<div id="cart-items">
+
+<p>
+Tu carrito está vacío
+</p>
+
+</div>
+
+<!-- FOOTER -->
+
+<div class="cart-footer">
+
+<h3 id="cart-total">
+Total: ₡0
+</h3>
+
+<div class="cart-actions">
+
+<div class="trash-floating" onclick="vaciarCarrito()">
+🗑️
+</div>
+
+<button onclick="mostrarFormulario()">
+Realizar pedido
+</button>
+
+</div>
+
+</div>
+
+<!-- FORMULARIO -->
+
+<div class="checkout-form" id="checkoutForm">
+
+<h2>
+Finalizar compra
+</h2>
+
+<input type="text" placeholder="Nombre completo">
+
+<input type="tel" placeholder="Teléfono">
+
+<input type="text" placeholder="Dirección exacta">
+
+<select>
+
+<option>Efectivo</option>
+<option>Sinpe</option>
+<option>Tarjeta</option>
+
+</select>
+
+<label class="upload-box">
+
+Subir comprobante SINPE
+
+<input type="file" hidden>
+
+</label>
+
+<textarea placeholder="Comentarios"></textarea>
+
+<button class="finish-btn">
+Realizar pedido
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="cart-items">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="hero-box">
+
+<img src="./img/hero-panaderia.jpg">
+
+<div class="hero-content">
+
+<h2>
+Pan fresco todos los días
+</h2>
+
+<p>
+Disfrutá nuestros panes artesanales,
+repostería dulce y salada recién horneada.
+</p>
+
+<div class="hero-buttons">
+
+<a href="#" class="btn-main">
+Ver menú
+</a>
+
+<a href="#" class="btn-second">
+WhatsApp
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- SLIDER -->
+
+<section class="slider-section">
+
+<div class="slider">
+
+<div class="slide active">
+
+<div class="slide-text">
+
+<span class="slide-badge">
+🔥 PROMO DEL DÍA
+</span>
+
+<h2>
+Combo Coca Cola + Repostería
+</h2>
+
+<p>
+Elegí entre pastel de pollo,
+palmito o enchilada acompañado
+de Coca Cola 355ml.
+</p>
+
+<div class="slide-price">
+₡3,200
+</div>
+
+<button>
+Pedir ahora
+</button>
+
+</div>
+
+<img src="./img/combo-coca-cola.jpg">
+
+</div>
+
+<div class="slide">
+
+<div class="slide-text">
+
+<span class="slide-badge">
+🥖 ESPECIAL
+</span>
+
+<h2>
+Baguette + Patté
+</h2>
+
+<p>
+Baguette con o sin queso acompañado de patté.
+</p>
+
+<div class="slide-price">
+₡2,400
+</div>
+
+<button>
+Ordenar
+</button>
+
+</div>
+
+<img src="./img/baguette-patte.jpg">
+
+</div>
+
+<div class="slide">
+
+<div class="slide-text">
+
+<span class="slide-badge">
+🍰 FAVORITO
+</span>
+
+<h2>
+Queque Seco
+</h2>
+
+<p>
+Especial de mantequilla recién horneado.
+</p>
+
+<div class="slide-price">
+₡3,850
+</div>
+
+<button>
+Comprar
+</button>
+
+</div>
+
+<img src="./img/queque-seco.jpg">
+
+</div>
+
+</div>
+
+</section>
+
+<!-- MENU -->
+
+<section class="section">
+
+<h2 style="margin-bottom:20px;">
+Menú
+</h2>
+
+<div class="filters">
+
+<button class="filter active" data-cat="all">
+Todos
+</button>
+
+<button class="filter" data-cat="combos">
+Combos
+</button>
+
+<button class="filter" data-cat="panes">
+Panes
+</button>
+
+<button class="filter" data-cat="dulce">
+Dulce
+</button>
+
+<button class="filter" data-cat="salada">
+Salada
+</button>
+
+</div>
+
+<div class="grid" id="grid"></div>
+
+</section>
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+<div class="modal-box">
+
+<div class="close" onclick="cerrar()">
+×
+</div>
+
+<img id="mImg">
+
+<div class="modal-content">
+
+<h3 id="mNombre"></h3>
+
+<p id="mDesc"></p>
+
+<div class="modal-price" id="mPrecio"></div>
+
+</div>
+
+</div>
+
+</div>
+<!-- =========================
+FORMULARIO PEDIDOS
+PEGAR ARRIBA DEL FOOTER
+========================= -->
+
+<div class="pedido-modal" id="pedidoModal">
+
+<div class="pedido-box">
+
+<span class="cerrar-pedido" onclick="cerrarPedido()">
+×
+</span>
+
+<h2>Finalizar pedido</h2>
+
+<form id="pedidoForm">
+
+<input 
+type="text" 
+id="nombre" 
+placeholder="Nombre completo" 
+required
+>
+
+<input 
+type="tel" 
+id="telefono" 
+placeholder="Teléfono" 
+required
+>
+
+<input 
+type="text" 
+id="direccion" 
+placeholder="Dirección" 
+required
+>
+
+<textarea 
+id="productosPedido" 
+readonly
+></textarea>
+
+<select id="metodoPago">
+
+<option>Efectivo</option>
+<option>Sinpe</option>
+<option>Tarjeta</option>
+
+</select>
+
+<textarea 
+id="comentarios" 
+placeholder="Comentarios adicionales"
+></textarea>
+
+<button type="submit">
+Enviar pedido
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<footer>
+
+
+© 2026 Panadería Maracaibo – Tibás
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+
+    
