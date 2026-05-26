@@ -89,7 +89,7 @@ c:"dulce",
 n:"Prusianos",
 d:"Repostería dulce tradicional.",
 p:"₡1,200",
-i:"Prusianos.jpg"
+i:"prusianos.jpg"
 }
 
 ];
