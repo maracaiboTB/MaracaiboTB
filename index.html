@@ -1,429 +1,408 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Panadería Maracaibo – Tibás</title>
+    <title>Panadería Maracaibo – Tibás</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
-<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="static/css/style.css">
 </head>
 
 <body>
 
-<div class="top-bar">
-🥐 Panadería Maracaibo – Tibás · WhatsApp 6389-0600
-</div>
+    <div class="top-bar">
+        🥐 Panadería Maracaibo – Tibás · W hatsApp 6389-0600
+    </div>
 
-<header>
+    <header>
 
-<div class="brand">
+        <div class="brand">
 
-<img src="./img/logo-panaderia.jpg" class="logo-img">
+            <img src="static/img/logo-panaderia.jpg" class="logo-img">
 
-<div>
-<h1>Panadería Maracaibo</h1>
-<small>Menú digital profesional</small>
-</div>
+            <div>
+                <h1>Panadería Maracaibo</h1>
+                <small>Menú digital profesional</small>
+            </div>
 
-</div>
+        </div>
 
-<a href="#" class="header-btn">
-Ver promociones
-</a>
+        <a href="#" class="header-btn">
+            Ver promociones
+        </a>
 
-</header>
-<!-- CARRITO -->
+    </header>
+    <!-- CARRITO -->
 
-<div class="cart-icon" onclick="toggleCart()">
+    <div class="cart-icon" onclick="toggleCart()">
 
-🛒
+        🛒
 
-<span id="cart-count">
-0
-</span>
+        <span id="cart-count">
+            0
+        </span>
 
-</div>
+    </div>
 
-<div class="cart-panel" id="cartPanel">
+    <div class="cart-panel" id="cartPanel">
 
-<!-- HEADER -->
+        <!-- HEADER -->
 
-<div class="cart-header">
+        <div class="cart-header">
 
-<h2>
-Tu carrito
-</h2>
+            <h2>
+                Tu carrito
+            </h2>
 
-<span onclick="toggleCart()">
-×
-</span>
+            <span onclick="toggleCart()">
+                ×
+            </span>
 
-</div>
+        </div>
 
-<!-- ITEMS -->
+        <!-- ITEMS -->
 
-<div id="cart-items">
+        <div id="cart-items">
 
-<p>
-Tu carrito está vacío
-</p>
+            <p>
+                Tu carrito está vacío
+            </p>
 
-</div>
+        </div>
 
-<!-- FOOTER -->
+        <!-- FOOTER -->
 
-<div class="cart-footer">
+        <div class="cart-footer">
 
-<h3 id="cart-total">
-Total: ₡0
-</h3>
+            <h3 id="cart-total">
+                Total: ₡0
+            </h3>
 
-<div class="cart-actions">
+            <div class="cart-actions">
 
-<div class="trash-floating" onclick="vaciarCarrito()">
-🗑️
-</div>
+                <div class="trash-floating" onclick="vaciarCarrito()">
+                    🗑️
+                </div>
 
-<button onclick="mostrarFormulario()">
-Realizar pedido
-</button>
+                <button onclick="mostrarFormulario()">
+                    Realizar pedido
+                </button>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-<!-- FORMULARIO -->
+        <!-- FORMULARIO -->
 
-<div class="checkout-form" id="checkoutForm">
+        <div class="checkout-form" id="checkoutForm">
 
-<h2>
-Finalizar compra
-</h2>
+            <h2>
+                Finalizar compra
+            </h2>
 
-<input type="text" placeholder="Nombre completo">
+            <input type="text" placeholder="Nombre completo">
 
-<input type="tel" placeholder="Teléfono">
+            <input type="tel" placeholder="Teléfono">
 
-<input type="text" placeholder="Dirección exacta">
+            <input type="text" placeholder="Dirección exacta">
 
-<select>
+            <select>
 
-<option>Efectivo</option>
-<option>Sinpe</option>
-<option>Tarjeta</option>
+                <option>Efectivo</option>
+                <option>Sinpe</option>
+                <option>Tarjeta</option>
 
-</select>
+            </select>
 
-<label class="upload-box">
+            <label class="upload-box">
 
-Subir comprobante SINPE
+                Subir comprobante SINPE
 
-<input type="file" hidden>
+                <input type="file" hidden>
 
-</label>
+            </label>
 
-<textarea placeholder="Comentarios"></textarea>
+            <textarea placeholder="Comentarios"></textarea>
 
-<button class="finish-btn">
-Realizar pedido
-</button>
+            <button class="finish-btn">
+                Realizar pedido
+            </button>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
-</div>
+    </div>
 
-</div>
+    </div>
 
-<div id="cart-items">
+    <div id="cart-items">
 
-</div>
+    </div>
 
-</div>
+    </div>
 
-</div>
+    </div>
 
-</div>
+    </div>
 
-<!-- HERO -->
+    <!-- HERO -->
 
-<section class="hero">
+    <section class="hero">
 
-<div class="hero-box">
+        <div class="hero-box">
 
-<img src="./img/hero-panaderia.jpg">
+            <img src="static/img/hero-panaderia.jpg">
 
-<div class="hero-content">
+            <div class="hero-content">
 
-<h2>
-Pan fresco todos los días
-</h2>
+                <h2>
+                    Pan fresco todos los días
+                </h2>
 
-<p>
-Disfrutá nuestros panes artesanales,
-repostería dulce y salada recién horneada.
-</p>
+                <p>
+                    Disfrutá nuestros panes artesanales,
+                    repostería dulce y salada recién horneada.
+                </p>
 
-<div class="hero-buttons">
+                <div class="hero-buttons">
 
-<a href="#" class="btn-main">
-Ver menú
-</a>
+                    <a href="#" class="btn-main">
+                        Ver menú
+                    </a>
 
-<a href="#" class="btn-second">
-WhatsApp
-</a>
+                    <a href="#" class="btn-second">
+                        WhatsApp
+                    </a>
 
-</div>
+                </div>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-</section>
+    </section>
 
-<!-- SLIDER -->
+    <!-- SLIDER -->
 
-<section class="slider-section">
+    <section class="slider-section">
 
-<div class="slider">
+        <div class="slider">
 
-<div class="slide active">
+            <div class="slide active">
 
-<div class="slide-text">
+                <div class="slide-text">
 
-<span class="slide-badge">
-🔥 PROMO DEL DÍA
-</span>
+                    <span class="slide-badge">
+                        🔥 PROMO DEL DÍA
+                    </span>
 
-<h2>
-Combo Coca Cola + Repostería
-</h2>
+                    <h2>
+                        Combo Coca Cola + Repostería
+                    </h2>
 
-<p>
-Elegí entre pastel de pollo,
-palmito o enchilada acompañado
-de Coca Cola 355ml.
-</p>
+                    <p>
+                        Elegí entre pastel de pollo,
+                        palmito o enchilada acompañado
+                        de Coca Cola 355ml.
+                    </p>
 
-<div class="slide-price">
-₡3,200
-</div>
+                    <div class="slide-price">
+                        ₡3,200
+                    </div>
 
-<button>
-Pedir ahora
-</button>
+                    <button>
+                        Pedir ahora
+                    </button>
 
-</div>
+                </div>
 
-<img src="./img/combo-coca-cola.jpg">
+                <img src="static/img/combo-coca-cola.jpg">
 
-</div>
+            </div>
 
-<div class="slide">
+            <div class="slide">
 
-<div class="slide-text">
+                <div class="slide-text">
 
-<span class="slide-badge">
-🥖 ESPECIAL
-</span>
+                    <span class="slide-badge">
+                        🥖 ESPECIAL
+                    </span>
 
-<h2>
-Baguette + Patté
-</h2>
+                    <h2>
+                        Baguette + Patté
+                    </h2>
 
-<p>
-Baguette con o sin queso acompañado de patté.
-</p>
+                    <p>
+                        Baguette con o sin queso acompañado de patté.
+                    </p>
 
-<div class="slide-price">
-₡2,400
-</div>
+                    <div class="slide-price">
+                        ₡2,400
+                    </div>
 
-<button>
-Ordenar
-</button>
+                    <button>
+                        Ordenar
+                    </button>
 
-</div>
+                </div>
 
-<img src="./img/baguette-patte.jpg">
+                <img src="static/img/baguette-patte.jpg">
 
-</div>
+            </div>
 
-<div class="slide">
+            <div class="slide">
 
-<div class="slide-text">
+                <div class="slide-text">
 
-<span class="slide-badge">
-🍰 FAVORITO
-</span>
+                    <span class="slide-badge">
+                        🍰 FAVORITO
+                    </span>
 
-<h2>
-Queque Seco
-</h2>
+                    <h2>
+                        Queque Seco
+                    </h2>
 
-<p>
-Especial de mantequilla recién horneado.
-</p>
+                    <p>
+                        Especial de mantequilla recién horneado.
+                    </p>
 
-<div class="slide-price">
-₡3,850
-</div>
+                    <div class="slide-price">
+                        ₡3,850
+                    </div>
 
-<button>
-Comprar
-</button>
+                    <button>
+                        Comprar
+                    </button>
 
-</div>
+                </div>
 
-<img src="./img/queque-seco.jpg">
+                <img src="static/img/queque-seco.jpg">
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-</section>
+    </section>
 
-<!-- MENU -->
+    <!-- MENU -->
 
-<section class="section">
+    <section class="section">
 
-<h2 style="margin-bottom:20px;">
-Menú
-</h2>
+        <h2 style="margin-bottom:20px;">
+            Menú
+        </h2>
 
-<div class="filters">
+        <div class="filters">
 
-<button class="filter active" data-cat="all">
-Todos
-</button>
+            <button class="filter active" data-cat="all">
+                Todos
+            </button>
 
-<button class="filter" data-cat="combos">
-Combos
-</button>
+            <button class="filter" data-cat="combos">
+                Combos
+            </button>
 
-<button class="filter" data-cat="panes">
-Panes
-</button>
+            <button class="filter" data-cat="panes">
+                Panes
+            </button>
 
-<button class="filter" data-cat="dulce">
-Dulce
-</button>
+            <button class="filter" data-cat="dulce">
+                Dulce
+            </button>
 
-<button class="filter" data-cat="salada">
-Salada
-</button>
+            <button class="filter" data-cat="salada">
+                Salada
+            </button>
 
-</div>
+        </div>
 
-<div class="grid" id="grid"></div>
+        <div class="grid" id="grid"></div>
 
-</section>
+    </section>
 
-<!-- MODAL -->
+    <!-- MODAL -->
 
-<div class="modal" id="modal">
+    <div class="modal" id="modal">
 
-<div class="modal-box">
+        <div class="modal-box">
 
-<div class="close" onclick="cerrar()">
-×
-</div>
+            <div class="close" onclick="cerrar()">
+                ×
+            </div>
 
-<img id="mImg">
+            <img id="mImg">
 
-<div class="modal-content">
+            <div class="modal-content">
 
-<h3 id="mNombre"></h3>
+                <h3 id="mNombre"></h3>
 
-<p id="mDesc"></p>
+                <p id="mDesc"></p>
 
-<div class="modal-price" id="mPrecio"></div>
+                <div class="modal-price" id="mPrecio"></div>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-</div>
-<!-- =========================
+    </div>
+    <!-- =========================
 FORMULARIO PEDIDOS
 PEGAR ARRIBA DEL FOOTER
 ========================= -->
 
-<div class="pedido-modal" id="pedidoModal">
+    <div class="pedido-modal" id="pedidoModal">
 
-<div class="pedido-box">
+        <div class="pedido-box">
 
-<span class="cerrar-pedido" onclick="cerrarPedido()">
-×
-</span>
+            <span class="cerrar-pedido" onclick="cerrarPedido()">
+                ×
+            </span>
 
-<h2>Finalizar pedido</h2>
+            <h2>Finalizar pedido</h2>
 
-<form id="pedidoForm">
+            <form id="pedidoForm">
 
-<input 
-type="text" 
-id="nombre" 
-placeholder="Nombre completo" 
-required
->
+                <input type="text" id="nombre" placeholder="Nombre completo" required>
 
-<input 
-type="tel" 
-id="telefono" 
-placeholder="Teléfono" 
-required
->
+                <input type="tel" id="telefono" placeholder="Teléfono" required>
 
-<input 
-type="text" 
-id="direccion" 
-placeholder="Dirección" 
-required
->
+                <input type="text" id="direccion" placeholder="Dirección" required>
 
-<textarea 
-id="productosPedido" 
-readonly
-></textarea>
+                <textarea id="productosPedido" readonly></textarea>
 
-<select id="metodoPago">
+                <select id="metodoPago">
 
-<option>Efectivo</option>
-<option>Sinpe</option>
-<option>Tarjeta</option>
+                    <option>Efectivo</option>
+                    <option>Sinpe</option>
+                    <option>Tarjeta</option>
 
-</select>
+                </select>
 
-<textarea 
-id="comentarios" 
-placeholder="Comentarios adicionales"
-></textarea>
+                <textarea id="comentarios" placeholder="Comentarios adicionales"></textarea>
 
-<button type="submit">
-Enviar pedido
-</button>
+                <button type="submit">
+                    Enviar pedido
+                </button>
 
-</form>
+            </form>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
-<footer>
+    <footer>
 
 
-© 2026 Panadería Maracaibo – Tibás
-</footer>
+        © 2026 Panadería Maracaibo – Tibás
+    </footer>
 
-<script src="script.js"></script>
+    <script src="static/js/script.js"></script>
 </body>
+
 </html>
-
-
-    

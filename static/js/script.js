@@ -113,7 +113,7 @@ grid.innerHTML+=`
 ${p.c.toUpperCase()}
 </div>
 
-<img src="./img/${p.i}" alt="${p.n}">
+<img src="static/img/${p.i}" alt="${p.n}">
 
 <div class="card-body">
 
@@ -142,7 +142,7 @@ Agregar al carrito
 
 function abrir(p){
 
-document.getElementById("mImg").src="./img/"+p.i;
+document.getElementById("mImg").src="static/img/"+p.i;
 
 document.getElementById("mNombre").innerText=p.n;
 
@@ -264,7 +264,7 @@ items.innerHTML += `
 
 <div class="cart-item">
 
-<img src="./img/${p.i}">
+<img src="static/img/${p.i}">
 
 <div class="cart-info">
 
