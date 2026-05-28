@@ -1,111 +1,111 @@
 /* SLIDER */
 
-const slides=document.querySelectorAll(".slide");
+const slides = document.querySelectorAll(".slide");
 
-let current=0;
+let current = 0;
 
-function cambiarSlide(){
+function cambiarSlide() {
 
-slides[current].classList.remove("active");
+    slides[current].classList.remove("active");
 
-current=(current+1)%slides.length;
+    current = (current + 1) % slides.length;
 
-slides[current].classList.add("active");
+    slides[current].classList.add("active");
 
 }
 
-setInterval(cambiarSlide,4000);
+setInterval(cambiarSlide, 4000);
 
 /* PRODUCTOS */
 
-const productos=[
+const productos = [
 
-{
-c:"combos",
-n:"Repostería + Coca Cola 355ml",
-d:"Pastel de pollo, palmito o enchilada acompañado de Coca Cola 355ml.",
-p:"₡3,200",
-i:"combo-coca-cola.jpg"
-},
+    {
+        c: "combos",
+        n: "Repostería + Coca Cola 355ml",
+        d: "Pastel de pollo, palmito o enchilada acompañado de Coca Cola 355ml.",
+        p: "₡3,200",
+        i: "combo-coca-cola.jpg"
+    },
 
-{
-c:"combos",
-n:"Baguette + Patté",
-d:"Baguette con o sin queso acompañado de patté.",
-p:"₡2,400",
-i:"baguette-patte.jpg"
-},
+    {
+        c: "combos",
+        n: "Baguette + Patté",
+        d: "Baguette con o sin queso acompañado de patté.",
+        p: "₡2,400",
+        i: "baguette-patte.jpg"
+    },
 
-{
-c:"combos",
-n:"Baguette + Natilla",
-d:"Baguette con natilla pequeña incluida.",
-p:"₡2,400",
-i:"baguette-natilla.jpg"
-},
+    {
+        c: "combos",
+        n: "Baguette + Natilla",
+        d: "Baguette con natilla pequeña incluida.",
+        p: "₡2,400",
+        i: "baguette-natilla.jpg"
+    },
 
-{
-c:"salada",
-n:"Pastel de Pollo",
-d:"Pastel relleno de pollo recién horneado.",
-p:"₡980",
-i:"pastel-pollo.jpg"
-},
+    {
+        c: "salada",
+        n: "Pastel de Pollo",
+        d: "Pastel relleno de pollo recién horneado.",
+        p: "₡980",
+        i: "pastel-pollo.jpg"
+    },
 
-{
-c:"salada",
-n:"Pastel de Carne",
-d:"Pastel relleno de carne de res.",
-p:"₡980",
-i:"pastel-carne-res.jpg"
-},
+    {
+        c: "salada",
+        n: "Pastel de Carne",
+        d: "Pastel relleno de carne de res.",
+        p: "₡980",
+        i: "pastel-carne-res.jpg"
+    },
 
-{
-c:"panes",
-n:"Baguette Simple",
-d:"Pan baguette artesanal.",
-p:"₡630",
-i:"baguette-simple.jpg"
-},
+    {
+        c: "panes",
+        n: "Baguette Simple",
+        d: "Pan baguette artesanal.",
+        p: "₡630",
+        i: "baguette-simple.jpg"
+    },
 
-{
-c:"panes",
-n:"Baguette con Queso",
-d:"Baguette recién horneada con queso.",
-p:"₡690",
-i:"baguette-queso.jpg"
-},
+    {
+        c: "panes",
+        n: "Baguette con Queso",
+        d: "Baguette recién horneada con queso.",
+        p: "₡690",
+        i: "baguette-queso.jpg"
+    },
 
-{
-c:"dulce",
-n:"Queque Seco",
-d:"Especial de mantequilla.",
-p:"₡3,850",
-i:"queque-seco.jpg"
-},
+    {
+        c: "dulce",
+        n: "Queque Seco",
+        d: "Especial de mantequilla.",
+        p: "₡3,850",
+        i: "queque-seco.jpg"
+    },
 
-{
-c:"dulce",
-n:"Prusianos",
-d:"Repostería dulce tradicional.",
-p:"₡1,200",
-i:"prusianos.jpg"
-}
+    {
+        c: "dulce",
+        n: "Prusianos",
+        d: "Repostería dulce tradicional.",
+        p: "₡1,200",
+        i: "prusianos.jpg"
+    }
 
 ];
 
-const grid=document.getElementById("grid");
-const filtros=document.querySelectorAll(".filter");
+const grid = document.getElementById("grid");
+const filtros = document.querySelectorAll(".filter");
 
-function pintar(cat="all"){
+function pintar(cat = "all") {
 
-grid.innerHTML="";
+    grid.innerHTML = "";
 
-productos
-.filter(p=>cat==="all"||p.c===cat)
-.forEach(p=>{
+    productos
+        .filter(p => cat === "all" || p.c === cat)
+        .forEach(p => {
 
-grid.innerHTML+=`
+            grid.innerHTML += `
 
 <div class="card" onclick='abrir(${JSON.stringify(p)})'>
 
@@ -136,51 +136,51 @@ Agregar al carrito
 
 `;
 
-});
+        });
 
 }
 
-function abrir(p){
+function abrir(p) {
 
-document.getElementById("mImg").src="static/img/"+p.i;
+    document.getElementById("mImg").src = "static/img/" + p.i;
 
-document.getElementById("mNombre").innerText=p.n;
+    document.getElementById("mNombre").innerText = p.n;
 
-document.getElementById("mDesc").innerText=p.d;
+    document.getElementById("mDesc").innerText = p.d;
 
-document.getElementById("mPrecio").innerText=p.p;
+    document.getElementById("mPrecio").innerText = p.p;
 
-document.getElementById("modal").style.display="flex";
-
-}
-
-function cerrar(){
-
-document.getElementById("modal").style.display="none";
+    document.getElementById("modal").style.display = "flex";
 
 }
 
-window.onclick=function(e){
+function cerrar() {
 
-const modal=document.getElementById("modal");
-
-if(e.target===modal){
-cerrar();
-}
+    document.getElementById("modal").style.display = "none";
 
 }
 
-filtros.forEach(btn=>{
+window.onclick = function (e) {
 
-btn.onclick=()=>{
+    const modal = document.getElementById("modal");
 
-filtros.forEach(x=>x.classList.remove("active"));
+    if (e.target === modal) {
+        cerrar();
+    }
 
-btn.classList.add("active");
+}
 
-pintar(btn.dataset.cat);
+filtros.forEach(btn => {
 
-};
+    btn.onclick = () => {
+
+        filtros.forEach(x => x.classList.remove("active"));
+
+        btn.classList.add("active");
+
+        pintar(btn.dataset.cat);
+
+    };
 
 });
 
@@ -191,7 +191,7 @@ CARRITO
 ========================= */
 
 
-let carrito=[];
+let carrito = [];
 
 /* AGREGAR */
 
@@ -203,64 +203,64 @@ AGREGAR AL CARRITO
 AGREGAR PRODUCTO
 ========================= */
 
-function agregarCarrito(producto){
+function agregarCarrito(producto) {
 
-const existente = carrito.find(
-item => item.n === producto.n
-);
+    const existente = carrito.find(
+        item => item.n === producto.n
+    );
 
-if(existente){
+    if (existente) {
 
-existente.cantidad += 1;
+        existente.cantidad += 1;
 
-}else{
+    } else {
 
-producto.cantidad = 1;
+        producto.cantidad = 1;
 
-carrito.push(producto);
+        carrito.push(producto);
 
-}
+    }
 
-/* ABRIR CARRITO AUTOMÁTICO */
+    /* ABRIR CARRITO AUTOMÁTICO */
 
-document
-.getElementById("cartPanel")
-.classList.add("active");
+    document
+        .getElementById("cartPanel")
+        .classList.add("active");
 
-actualizarCarrito();
+    actualizarCarrito();
 
 }
 
 /* ACTUALIZAR */
 
-function actualizarCarrito(){
+function actualizarCarrito() {
 
-const items = document.getElementById("cart-items");
+    const items = document.getElementById("cart-items");
 
-const total = document.getElementById("cart-total");
+    const total = document.getElementById("cart-total");
 
-const count = document.getElementById("cart-count");
+    const count = document.getElementById("cart-count");
 
-items.innerHTML="";
+    items.innerHTML = "";
 
-let totalPrecio = 0;
+    let totalPrecio = 0;
 
-let totalCantidad = 0;
+    let totalCantidad = 0;
 
-carrito.forEach((p,index)=>{
+    carrito.forEach((p, index) => {
 
-const precioNumero = Number(
-p.p.replace("₡","")
-.replace(",","")
-);
+        const precioNumero = Number(
+            p.p.replace("₡", "")
+                .replace(",", "")
+        );
 
-const subtotal = precioNumero * p.cantidad;
+        const subtotal = precioNumero * p.cantidad;
 
-totalPrecio += subtotal;
+        totalPrecio += subtotal;
 
-totalCantidad += p.cantidad;
+        totalCantidad += p.cantidad;
 
-items.innerHTML += `
+        items.innerHTML += `
 
 <div class="cart-item">
 
@@ -300,25 +300,25 @@ ${p.cantidad}
 
 `;
 
-});
+    });
 
-total.innerText = `Total: ₡${totalPrecio}`;
+    total.innerText = `Total: ₡${totalPrecio}`;
 
-count.innerText = totalCantidad;
-
-}
-
-function cambiarCantidad(index,cambio){
-
-carrito[index].cantidad += cambio;
-
-if(carrito[index].cantidad <= 0){
-
-carrito.splice(index,1);
+    count.innerText = totalCantidad;
 
 }
 
-actualizarCarrito();
+function cambiarCantidad(index, cambio) {
+
+    carrito[index].cantidad += cambio;
+
+    if (carrito[index].cantidad <= 0) {
+
+        carrito.splice(index, 1);
+
+    }
+
+    actualizarCarrito();
 
 }
 
@@ -326,11 +326,11 @@ actualizarCarrito();
 VACIAR CARRITO
 ========================= */
 
-function vaciarCarrito(){
+function vaciarCarrito() {
 
-carrito = [];
+    carrito = [];
 
-actualizarCarrito();
+    actualizarCarrito();
 
 }
 
@@ -338,10 +338,270 @@ actualizarCarrito();
 ABRIR CARRITO
 ========================= */
 
-function toggleCart(){
+function toggleCart() {
 
-document
-.getElementById("cartPanel")
-.classList.toggle("active");
+    document
+        .getElementById("cartPanel")
+        .classList.toggle("active");
 
 }
+
+/* =========================
+MOSTRAR FORMULARIO
+========================= */
+
+function mostrarFormulario() {
+
+    if (carrito.length === 0) {
+
+        alert("Tu carrito está vacío");
+
+        return;
+
+    }
+
+    document
+        .getElementById("pedidoModal")
+        .style.display = "flex";
+
+    let resumen = "";
+
+    let total = 0;
+
+    carrito.forEach(item => {
+
+        const precio = Number(
+            item.p.replace("₡", "")
+                .replace(",", "")
+        );
+
+        const subtotal = precio * item.cantidad;
+
+        total += subtotal;
+
+        resumen += `${item.cantidad}x ${item.n} - ₡${subtotal}\n`;
+
+    });
+
+    resumen += `\nTotal: ₡${total}`;
+
+    document
+        .getElementById("productosPedido")
+        .value = resumen;
+
+}
+
+function cerrarPedido() {
+
+    document
+        .getElementById("pedidoModal")
+        .style.display = "none";
+
+}
+
+/* =========================
+ENVIAR PEDIDO
+========================= */
+
+document
+.getElementById("pedidoForm")
+.addEventListener("submit", function (e) {
+
+    e.preventDefault();
+
+    const nombre =
+    document.getElementById("nombre").value;
+
+    const telefono =
+    document.getElementById("telefono").value;
+
+    const direccion =
+    document.getElementById("direccion").value;
+
+    const metodoPago =
+    document.getElementById("metodoPago").value;
+
+    const comentarios =
+    document.getElementById("comentarios").value;
+
+    const productos =
+    document.getElementById("productosPedido").value;
+
+    const mensaje = `
+
+🥐 *Nuevo Pedido* 🥐
+
+👤 Nombre:
+${nombre}
+
+📞 Teléfono:
+${telefono}
+
+📍 Dirección:
+${direccion}
+
+🛒 Pedido:
+${productos}
+
+💳 Método pago:
+${metodoPago}
+
+📝 Comentarios:
+${comentarios}
+
+`;
+
+    const numero = "50686725494";
+
+    const url =
+    `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+
+    /* ABRIR WHATSAPP */
+
+    window.location.href = url;
+
+    /* TOAST */
+
+    mostrarToast(
+        "Redirigiendo a WhatsApp 🔥",
+        "success"
+    );
+
+    /* LIMPIAR */
+
+    carrito = [];
+
+    actualizarCarrito();
+
+    cerrarPedido();
+
+    this.reset();
+
+});
+
+/* =========================
+PREVIEW COMPROBANTE
+========================= */
+document
+.getElementById("comprobante")
+.addEventListener("change", function(){
+
+    const file = this.files[0];
+
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        preview.src = e.target.result;
+
+        preview.style.display = "block";
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+const metodoPago =
+document.getElementById("metodoPago");
+const preview =
+document.getElementById("previewComprobante");
+const uploadBox =
+document.getElementById("uploadBox");
+
+metodoPago.addEventListener("change", function(){
+
+    console.log(this.value);
+
+    if(this.value === "Sinpe"){
+
+        uploadBox.style.display = "block";
+
+    }else{
+
+        uploadBox.style.display = "none";
+
+    }
+
+});
+
+/* CAMBIO SELECT */
+
+metodoPago.addEventListener(
+    "change",
+    verificarMetodoPago
+);
+
+/* EJECUTAR AL CARGAR */
+
+verificarMetodoPago();
+
+
+
+
+/* =========================
+TOAST
+========================= */
+
+
+function mostrarToast(texto, tipo="success"){
+
+    const toast = document.createElement("div");
+
+    toast.className = `toast ${tipo}`;
+
+    toast.innerText = texto;
+
+    document.body.appendChild(toast);
+
+    setTimeout(()=>{
+
+        toast.classList.add("show");
+
+    },100);
+
+    setTimeout(()=>{
+
+        toast.classList.remove("show");
+
+        setTimeout(()=>{
+
+            toast.remove();
+
+        },300);
+
+    },3000);
+
+}
+function alert(texto, tipo="error"){
+
+    const toast = document.createElement("div");
+
+    toast.className = `toast ${tipo}`;
+
+    toast.innerText = texto;
+
+    document.body.appendChild(toast);
+
+    setTimeout(()=>{
+
+        toast.classList.add("show");
+
+    },100);
+
+    setTimeout(()=>{
+
+        toast.classList.remove("show");
+
+        setTimeout(()=>{
+
+            toast.remove();
+
+        },300);
+
+    },3000);
+
+}
+

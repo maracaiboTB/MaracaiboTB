@@ -353,9 +353,9 @@
     </div>
     <!-- =========================
 FORMULARIO PEDIDOS
+
 PEGAR ARRIBA DEL FOOTER
 ========================= -->
-
     <div class="pedido-modal" id="pedidoModal">
 
         <div class="pedido-box">
@@ -378,11 +378,42 @@ PEGAR ARRIBA DEL FOOTER
 
                 <select id="metodoPago">
 
-                    <option>Efectivo</option>
-                    <option>Sinpe</option>
-                    <option>Tarjeta</option>
 
+                    <option value="Efectivo">
+                        Efectivo
+                    </option>
+
+                    <option value="Sinpe">
+                        Sinpe
+                    </option>
+
+                    <option value="Tarjeta">
+                        Tarjeta
+                    </option>
+
+               
                 </select>
+
+                <!-- SUBIR COMPROBANTE -->
+
+                <label class="upload-box" id="uploadBox">
+
+                    📸 Subir comprobante SINPE
+
+                    <input type="file" id="comprobante" accept="image/*" hidden>
+
+                </label>
+
+                <!-- PREVIEW -->
+
+                <img id="previewComprobante" style="
+                    width:100%;
+                    margin-top:15px;
+                    border-radius:20px;
+                    display:none;
+                    max-height:300px;
+                    object-fit:cover;
+                ">
 
                 <textarea id="comentarios" placeholder="Comentarios adicionales"></textarea>
 
