@@ -16,82 +16,101 @@ function cambiarSlide() {
 
 setInterval(cambiarSlide, 4000);
 
-/* PRODUCTOS */
+/* =========================
+PRODUCTOS BASE
+========================= */
+
+const productosBase = [
+
+{
+c:"combos",
+n:"Repostería + Coca Cola 355ml",
+d:"Pastel de pollo, palmito o enchilada acompañado de Coca Cola 355ml.",
+p:"₡3,200",
+i:"combo-coca-cola.jpg"
+},
+
+{
+c:"combos",
+n:"Baguette + Patté",
+d:"Baguette con o sin queso acompañado de patté.",
+p:"₡2,400",
+i:"baguette-patte.jpg"
+},
+
+{
+c:"combos",
+n:"Baguette + Natilla",
+d:"Baguette con natilla pequeña incluida.",
+p:"₡2,400",
+i:"baguette-natilla.jpg"
+},
+
+{
+c:"salada",
+n:"Pastel de Pollo",
+d:"Pastel relleno de pollo recién horneado.",
+p:"₡980",
+i:"pastel-pollo.jpg"
+},
+
+{
+c:"salada",
+n:"Pastel de Carne",
+d:"Pastel relleno de carne de res.",
+p:"₡980",
+i:"pastel-carne-res.jpg"
+},
+
+{
+c:"panes",
+n:"Baguette Simple",
+d:"Pan baguette artesanal.",
+p:"₡630",
+i:"baguette-simple.jpg"
+},
+
+{
+c:"panes",
+n:"Baguette con Queso",
+d:"Baguette recién horneada con queso.",
+p:"₡690",
+i:"baguette-queso.jpg"
+},
+
+{
+c:"dulce",
+n:"Queque Seco",
+d:"Especial de mantequilla.",
+p:"₡3,850",
+i:"queque-seco.jpg"
+},
+
+{
+c:"dulce",
+n:"Prusianos",
+d:"Repostería dulce tradicional.",
+p:"₡1,200",
+i:"prusianos.jpg"
+}
+
+];
+
+/* =========================
+PRODUCTOS ADMIN
+========================= */
+
+const productosAdmin = JSON.parse(
+localStorage.getItem("productos")
+) || [];
+
+/* =========================
+UNIR PRODUCTOS
+========================= */
 
 const productos = [
-
-    {
-        c: "combos",
-        n: "Repostería + Coca Cola 355ml",
-        d: "Pastel de pollo, palmito o enchilada acompañado de Coca Cola 355ml.",
-        p: "₡3,200",
-        i: "combo-coca-cola.jpg"
-    },
-
-    {
-        c: "combos",
-        n: "Baguette + Patté",
-        d: "Baguette con o sin queso acompañado de patté.",
-        p: "₡2,400",
-        i: "baguette-patte.jpg"
-    },
-
-    {
-        c: "combos",
-        n: "Baguette + Natilla",
-        d: "Baguette con natilla pequeña incluida.",
-        p: "₡2,400",
-        i: "baguette-natilla.jpg"
-    },
-
-    {
-        c: "salada",
-        n: "Pastel de Pollo",
-        d: "Pastel relleno de pollo recién horneado.",
-        p: "₡980",
-        i: "pastel-pollo.jpg"
-    },
-
-    {
-        c: "salada",
-        n: "Pastel de Carne",
-        d: "Pastel relleno de carne de res.",
-        p: "₡980",
-        i: "pastel-carne-res.jpg"
-    },
-
-    {
-        c: "panes",
-        n: "Baguette Simple",
-        d: "Pan baguette artesanal.",
-        p: "₡630",
-        i: "baguette-simple.jpg"
-    },
-
-    {
-        c: "panes",
-        n: "Baguette con Queso",
-        d: "Baguette recién horneada con queso.",
-        p: "₡690",
-        i: "baguette-queso.jpg"
-    },
-
-    {
-        c: "dulce",
-        n: "Queque Seco",
-        d: "Especial de mantequilla.",
-        p: "₡3,850",
-        i: "queque-seco.jpg"
-    },
-
-    {
-        c: "dulce",
-        n: "Prusianos",
-        d: "Repostería dulce tradicional.",
-        p: "₡1,200",
-        i: "prusianos.jpg"
-    }
-
+...productosBase,
+...productosAdmin
 ];
 
 const grid = document.getElementById("grid");

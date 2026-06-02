@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Panel Admin</title>
+
+<link rel="stylesheet" href="static/css/admin.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div class="login-screen" id="loginScreen">
+
+<div class="login-box">
+
+<h1>🥐 Panel Admin</h1>
+
+<input type="text" id="user" placeholder="Usuario">
+
+<input type="password" id="pass" placeholder="Contraseña">
+
+<button onclick="login()">
+Ingresar
+</button>
+
+</div>
+
+</div>
+
+<!-- PANEL -->
+
+<div class="admin-panel" id="adminPanel">
+
+<header>
+
+<h1>
+Panel de Administración
+</h1>
+
+<button onclick="logout()">
+Cerrar sesión
+</button>
+
+</header>
+
+<!-- FORM -->
+
+<div class="admin-form">
+
+<h2>
+Agregar producto
+</h2>
+
+<input type="text" id="nombre" placeholder="Nombre producto">
+
+<input type="text" id="precio" placeholder="Precio">
+
+<textarea id="descripcion" placeholder="Descripción"></textarea>
+
+<select id="categoria">
+
+<option value="combos">Combos</option>
+<option value="panes">Panes</option>
+<option value="dulce">Dulce</option>
+<option value="salada">Salada</option>
+
+</select>
+
+<input type="text" id="stock" placeholder="Stock">
+
+<input type="text" id="tallas" placeholder="Tallas">
+
+<input type="file" id="imagen">
+
+<button onclick="guardarProducto()">
+Guardar producto
+</button>
+
+</div>
+
+<!-- PRODUCTOS -->
+
+<div class="admin-products">
+
+<h2>
+Productos registrados
+</h2>
+
+<div id="productosAdmin"></div>
+
+</div>
+
+</div>
+
+<script src="static/js/admin.js"></script>
+
+</body>
+</html>
