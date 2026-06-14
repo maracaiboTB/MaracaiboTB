@@ -90,6 +90,35 @@ Guardar producto
 <!-- PRODUCTOS -->
 
 <div class="admin-products">
+```html
+<div class="admin-orders">
+
+<h2>Pedidos Recibidos</h2>
+
+<table class="orders-table">
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>Cliente</th>
+<th>Teléfono</th>
+<th>Total</th>
+<th>Pago</th>
+<th>Fecha</th>
+<th>Estado</th>
+</tr>
+
+</thead>
+
+<tbody id="pedidosAdmin">
+
+</tbody>
+
+</table>
+
+</div>
+```
 
 <h2>
 Productos registrados
@@ -102,6 +131,75 @@ Productos registrados
 </div>
 
 <script src="static/js/admin.js"></script>
+<div class="admin-container">
 
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<button onclick="mostrarVista('productos')">
+📦 Productos
+</button>
+
+<button onclick="mostrarVista('pedidos')">
+🛒 Pedidos
+</button>
+
+<button onclick="mostrarVista('config')">
+⚙ Configuración
+</button>
+
+<button onclick="logout()">
+🚪 Salir
+</button>
+
+</div>
+
+<!-- CONTENIDO -->
+<div class="content">
+
+<!-- PRODUCTOS -->
+<div id="vistaProductos">
+
+<h2>Productos</h2>
+
+<!-- aquí va tu formulario actual -->
+<!-- y tu lista de productos -->
+
+</div>
+
+<!-- PEDIDOS -->
+<div id="vistaPedidos" style="display:none;">
+
+<h2>Pedidos Recibidos</h2>
+
+<div id="resumenPedidos"></div>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Cliente</th>
+<th>Total</th>
+<th>Estado</th>
+</tr>
+</thead>
+
+<tbody id="tablaPedidos"></tbody>
+</table>
+
+</div>
+
+<!-- CONFIG -->
+<div id="vistaConfig" style="display:none;">
+
+<h2>Configuración</h2>
+
+<p>Aquí luego metemos banner, WhatsApp, etc.</p>
+
+</div>
+
+</div>
+</div>
 </body>
 </html>

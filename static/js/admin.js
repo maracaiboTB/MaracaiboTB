@@ -1,3 +1,4 @@
+
 /* LOGIN */
 
 const admins = [
@@ -49,6 +50,10 @@ document
 
 cargarProductos();
 
+cargarPedidos();
+
+mostrarVista("productos");
+
 }
 
 /* SESION */
@@ -64,6 +69,9 @@ document
 .classList.add("active");
 
 cargarProductos();
+
+cargarPedidos();
+
 
 }
 
@@ -156,7 +164,7 @@ reader.readAsDataURL(imagen);
 
 }
 
-/* CARGAR */
+/* CARGAR PRODUCTOS */
 
 function cargarProductos(){
 
@@ -241,5 +249,76 @@ document.getElementById("stock").value = "";
 document.getElementById("tallas").value = "";
 
 document.getElementById("imagen").value = "";
+
+}
+
+/* PEDIDOS */
+
+function cargarPedidos(){
+
+const pedidos =
+JSON.parse(localStorage.getItem("pedidos")) || [];
+
+const tabla =
+document.getElementById("tablaPedidos");
+
+tabla.innerHTML = "";
+
+pedidos.forEach(p => {
+
+tabla.innerHTML += `
+<tr>
+<td>${p.id}</td>
+<td>${p.nombre}</td>
+<td>₡${p.total}</td>
+<td>${p.estado}</td>
+</tr>
+`;
+
+});
+
+}
+
+function cambiarEstado(id,nuevoEstado){
+
+const pedidos =
+JSON.parse(
+localStorage.getItem("pedidos")
+) || [];
+
+const pedido =
+pedidos.find(p=>p.id==id);
+
+if(pedido){
+
+pedido.estado = nuevoEstado;
+
+localStorage.setItem(
+"pedidos",
+JSON.stringify(pedidos)
+);
+
+}
+
+}
+
+function mostrarVista(vista){
+
+document.getElementById("vistaProductos").style.display = "none";
+document.getElementById("vistaPedidos").style.display = "none";
+document.getElementById("vistaConfig").style.display = "none";
+
+if(vista === "productos"){
+document.getElementById("vistaProductos").style.display = "block";
+}
+
+if(vista === "pedidos"){
+document.getElementById("vistaPedidos").style.display = "block";
+cargarPedidos();
+}
+
+if(vista === "config"){
+document.getElementById("vistaConfig").style.display = "block";
+}
 
 }
