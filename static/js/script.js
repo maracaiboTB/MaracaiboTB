@@ -426,77 +426,98 @@ document
 .getElementById("pedidoForm")
 .addEventListener("submit", function (e) {
 
-    e.preventDefault();
+e.preventDefault();
 
-    const nombre =
-    document.getElementById("nombre").value;
+const nombre =
+document.getElementById("nombre").value;
 
-    const telefono =
-    document.getElementById("telefono").value;
+const telefono =
+document.getElementById("telefono").value;
 
-    const direccion =
-    document.getElementById("direccion").value;
+const direccion =
+document.getElementById("direccion").value;
 
-    const metodoPago =
-    document.getElementById("metodoPago").value;
+const metodoPago =
+document.getElementById("metodoPago").value;
 
-    const comentarios =
-    document.getElementById("comentarios").value;
+const comentarios =
+document.getElementById("comentarios").value;
 
-    const productos =
-    document.getElementById("productosPedido").value;
+const productos =
+document.getElementById("productosPedido").value;
 
-    const mensaje = `
+/* =========================
+GUARDAR PEDIDO (PRIMERO SIEMPRE)
+========================= */
 
-🥐 *Nuevo Pedido* 🥐
+const pedidos =
+JSON.parse(localStorage.getItem("pedidos")) || [];
 
-👤 Nombre:
-${nombre}
+let totalPedido = 0;
 
-📞 Teléfono:
-${telefono}
+carrito.forEach(item => {
 
-📍 Dirección:
-${direccion}
+const precio = Number(
+item.p.replace("₡","").replace(",","")
+);
 
-🛒 Pedido:
-${productos}
-
-💳 Método pago:
-${metodoPago}
-
-📝 Comentarios:
-${comentarios}
-
-`;
-
-    const numero = "50686725494";
-
-    const url =
-    `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
-    /* ABRIR WHATSAPP */
-
-    window.location.href = url;
-
-    /* TOAST */
-
-    mostrarToast(
-        "Redirigiendo a WhatsApp 🔥",
-        "success"
-    );
-
-    /* LIMPIAR */
-
-    carrito = [];
-
-    actualizarCarrito();
-
-    cerrarPedido();
-
-    this.reset();
+totalPedido += precio * item.cantidad;
 
 });
+
+const nuevoPedido = {
+
+id: Date.now(),
+nombre,
+telefono,
+direccion,
+productos,
+total: totalPedido,
+metodoPago,
+comentarios,
+fecha: new Date().toLocaleString(),
+estado: "Pendiente"
+
+};
+
+pedidos.push(nuevoPedido);
+
+localStorage.setItem(
+"pedidos",
+JSON.stringify(pedidos)
+);
+
+/* =========================
+WHATSAPP DESPUÉS
+========================= */
+
+const mensaje = `
+🥐 Nuevo Pedido
+
+Nombre: ${nombre}
+Tel: ${telefono}    
+Dirección: ${direccion}
+Total: ₡${totalPedido}
+`;
+
+const numero = "50686725494";
+
+const url =
+`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+
+/* limpiar carrito antes de salir */
+carrito = [];
+actualizarCarrito();
+cerrarPedido();
+
+/* abrir whatsapp */
+window.location.href = url;
+
+this.reset();
+
+});
+
+
 
 /* =========================
 PREVIEW COMPROBANTE

@@ -144,3 +144,57 @@ font-weight:600;
 background:#ff3b30;
 color:white;
 }
+/* TABS ADMIN */
+
+.admin-tabs{
+display:flex;
+gap:15px;
+margin-bottom:25px;
+flex-wrap:wrap;
+}
+
+.tab-btn{
+display:flex;
+align-items:center;
+gap:10px;
+
+padding:15px 25px;
+
+border:none;
+border-radius:18px;
+
+background:white;
+
+color:#2e1b0f;
+
+font-size:15px;
+font-weight:600;
+
+cursor:pointer;
+
+box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+transition:.25s;
+}
+
+.tab-btn span{
+font-size:20px;
+}
+
+.tab-btn:hover{
+transform:translateY(-3px);
+background:#ff8c42;
+color:white;
+box-shadow:0 12px 25px rgba(255,140,66,.3);
+}
+
+.tab-btn.active{
+background:linear-gradient(
+135deg,
+#ff8c42,
+#e56f1c
+);
+
+color:white;
+box-shadow:0 12px 25px rgba(255,140,66,.35);
+}

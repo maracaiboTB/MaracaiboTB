@@ -322,3 +322,69 @@ document.getElementById("vistaConfig").style.display = "block";
 }
 
 }
+function cargarPedidos(){
+
+const pedidos =
+JSON.parse(
+localStorage.getItem("pedidos")
+) || [];
+
+const tabla =
+document.getElementById("tablaPedidos");
+
+if(!tabla) return;
+
+tabla.innerHTML = "";
+
+pedidos.forEach(p => {
+
+tabla.innerHTML += `
+
+<tr>
+
+<td>${p.id}</td>
+
+<td>${p.nombre}</td>
+
+<td>₡${p.total}</td>
+
+<td>${p.estado}</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function mostrarTab(tab){
+
+document.getElementById("tab-productos").style.display = "none";
+document.getElementById("tab-pedidos").style.display = "none";
+document.getElementById("tab-config").style.display = "none";
+
+document.getElementById("tab-" + tab).style.display = "block";
+
+if(tab === "pedidos"){
+cargarPedidos();
+}
+
+}
+
+function verificarMetodoPago(){
+
+const metodo = document.getElementById("metodoPago");
+
+const uploadBox = document.getElementById("uploadBox");
+
+if(!metodo || !uploadBox) return;
+
+if(metodo.value === "Sinpe"){
+uploadBox.style.display = "block";
+}else{
+uploadBox.style.display = "none";
+}
+
+}
+

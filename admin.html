@@ -38,8 +38,25 @@ Ingresar
 
 <!-- PANEL -->
 
-<div class="admin-panel" id="adminPanel">
+<div class="admin-tabs">
 
+<button class="tab-btn active" onclick="mostrarTab('productos')">
+<span>📦</span>
+
+Productos
+</button>
+
+<button class="tab-btn" onclick="mostrarTab('pedidos')">
+<span>🛒</span>
+Pedidos
+</button>
+
+<button class="tab-btn" onclick="mostrarTab('config')">
+<span>⚙️</span>
+Configuración
+</button>
+
+</div>
 <header>
 
 <h1>
@@ -51,11 +68,11 @@ Cerrar sesión
 </button>
 
 </header>
-
+<div id="tab-productos">
 <!-- FORM -->
 
 <div class="admin-form">
-
+    
 <h2>
 Agregar producto
 </h2>
@@ -88,43 +105,8 @@ Guardar producto
 </div>
 
 <!-- PRODUCTOS -->
-
-<div class="admin-products">
-```html
-<div class="admin-orders">
-
-<h2>Pedidos Recibidos</h2>
-
-<table class="orders-table">
-
-<thead>
-
-<tr>
-<th>ID</th>
-<th>Cliente</th>
-<th>Teléfono</th>
-<th>Total</th>
-<th>Pago</th>
-<th>Fecha</th>
-<th>Estado</th>
-</tr>
-
-</thead>
-
-<tbody id="pedidosAdmin">
-
-</tbody>
-
-</table>
-
-</div>
-```
-
-<h2>
-Productos registrados
 </h2>
 
-<div id="productosAdmin"></div>
 
 </div>
 
@@ -132,36 +114,6 @@ Productos registrados
 
 <script src="static/js/admin.js"></script>
 <div class="admin-container">
-
-<!-- SIDEBAR -->
-
-<div class="sidebar">
-
-<button onclick="mostrarVista('productos')">
-📦 Productos
-</button>
-
-<button onclick="mostrarVista('pedidos')">
-🛒 Pedidos
-</button>
-
-<button onclick="mostrarVista('config')">
-⚙ Configuración
-</button>
-
-<button onclick="logout()">
-🚪 Salir
-</button>
-
-</div>
-
-<!-- CONTENIDO -->
-<div class="content">
-
-<!-- PRODUCTOS -->
-<div id="vistaProductos">
-
-<h2>Productos</h2>
 
 <!-- aquí va tu formulario actual -->
 <!-- y tu lista de productos -->
@@ -203,3 +155,29 @@ Productos registrados
 </div>
 </body>
 </html>
+
+<!-- PRODUCTOS -->
+<div id="tab-productos">
+
+<!-- TU FORMULARIO -->
+<!-- TU LISTA DE PRODUCTOS -->
+
+</div>
+
+<!-- PEDIDOS -->
+<div id="tab-pedidos" style="display:none;">
+
+<h2>Pedidos</h2>
+
+<table>
+<tbody id="tablaPedidos"></tbody>
+</table>
+
+</div>
+
+<!-- CONFIG -->
+<div id="tab-config" style="display:none;">
+
+<h2>Configuración</h2>
+
+</div>
