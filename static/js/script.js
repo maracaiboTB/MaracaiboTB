@@ -510,10 +510,22 @@ carrito = [];
 actualizarCarrito();
 cerrarPedido();
 
-/* abrir whatsapp */
+/* cerrar pedido */
+cerrarPedido();
+
+/* limpiar carrito */
+carrito = [];
+actualizarCarrito();
+
+/* limpiar formulario */
+this.reset();
+
+/* abrir whatsapp con pequeño delay */
+setTimeout(() => {
+
 window.location.href = url;
 
-this.reset();
+}, 300);
 
 });
 

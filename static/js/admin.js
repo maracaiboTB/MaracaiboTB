@@ -28,6 +28,19 @@ a => a.user === user && a.pass === pass
 );
 
 if(!valido){
+localStorage.setItem("adminLogin", "true");
+
+document.getElementById("loginScreen").style.display = "none";
+
+const panel = document.getElementById("adminPanel");
+
+if(panel){
+panel.classList.add("active");
+}
+
+cargarProductos();
+cargarPedidos();
+mostrarVista("productos");
 
 alert("Credenciales incorrectas");
 
@@ -44,9 +57,11 @@ document
 .getElementById("loginScreen")
 .style.display = "none";
 
-document
-.getElementById("adminPanel")
-.classList.add("active");
+const panel = document.getElementById("adminPanel");
+
+if(panel){
+panel.classList.add("active");
+}
 
 cargarProductos();
 
