@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -9,8 +10,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-
-    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
@@ -292,39 +292,63 @@
 
     <!-- MENU -->
 
-    <section class="section">
+<section class="section">
 
-        <h2 style="margin-bottom:20px;">
-            Menú
-        </h2>
+    <h2 style="margin-bottom:20px;">
+        Menú
+    </h2>
 
-        <div class="filters">
+    <div class="filters">
 
-            <button class="filter active" data-cat="all">
-                Todos
-            </button>
+        <button class="filter active">
+            Todos
+        </button>
 
-            <button class="filter" data-cat="combos">
-                Combos
-            </button>
+    </div>
 
-            <button class="filter" data-cat="panes">
-                Panes
-            </button>
+    <div class="grid">
 
-            <button class="filter" data-cat="dulce">
-                Dulce
-            </button>
+        {% for p in productos %}
 
-            <button class="filter" data-cat="salada">
-                Salada
-            </button>
+        <div class="card">
+
+            <div class="tag">
+                {{ p.categoria|upper }}
+            </div>
+
+            <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
+
+            <div class="card-body">
+
+                <h3>{{ p.nombre }}</h3>
+
+                <p>{{ p.descripcion }}</p>
+
+                <div class="price">
+                    ₡{{ p.precio }}
+                </div>
+
+                <button class="buy-btn"
+                        onclick="agregarCarrito({
+                            id:'{{ p.id }}',
+                            n:'{{ p.nombre }}',
+                            p:'₡{{ p.precio }}',
+                            i:'{{ p.imagen.url }}'
+                        })">
+
+                    Agregar al carrito
+
+                </button>
+
+            </div>
 
         </div>
 
-        <div class="grid" id="grid"></div>
+        {% endfor %}
 
-    </section>
+    </div>
+
+</section>
 
     <!-- MODAL -->
 
@@ -433,7 +457,7 @@ PEGAR ARRIBA DEL FOOTER
         © 2026 Panadería Maracaibo – Tibás
     </footer>
 
-    <script src="static/js/script.js"></script>
+  <script src="{% static 'js/script.js' %}"></script>
 </body>
 
 </html>

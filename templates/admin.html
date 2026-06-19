@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -7,8 +9,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Panel Admin</title>
+    <script src="{% static 'js/admin.js' %}"></script>
 
-<link rel="stylesheet" href="static/css/admin.css">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -73,36 +76,51 @@ Cerrar sesión
 
 <div class="admin-form">
     
-<h2>
-Agregar producto
-</h2>
+<form
+    method="POST"
+    enctype="multipart/form-data"
+>
 
-<input type="text" id="nombre" placeholder="Nombre producto">
+    {% csrf_token %}
 
-<input type="text" id="precio" placeholder="Precio">
+    <input type="text"
+           name="nombre"
+           placeholder="Nombre producto">
 
-<textarea id="descripcion" placeholder="Descripción"></textarea>
+    <input type="number"
+           name="precio"
+           placeholder="Precio">
 
-<select id="categoria">
+    <textarea
+        name="descripcion"
+        placeholder="Descripción">
+    </textarea>
 
-<option value="combos">Combos</option>
-<option value="panes">Panes</option>
-<option value="dulce">Dulce</option>
-<option value="salada">Salada</option>
+    <select name="categoria">
 
-</select>
+        <option value="combos">Combos</option>
+        <option value="panes">Panes</option>
+        <option value="dulce">Dulce</option>
+        <option value="salada">Salada</option>
 
-<input type="text" id="stock" placeholder="Stock">
+    </select>
 
-<input type="text" id="tallas" placeholder="Tallas">
+    <input type="number"
+           name="stock"
+           placeholder="Stock">
 
-<input type="file" id="imagen">
+    <input type="text"
+           name="tallas"
+           placeholder="Tallas">
 
-<button onclick="guardarProducto()">
-Guardar producto
-</button>
+    <input type="file"
+           name="imagen">
 
-</div>
+    <button type="submit">
+        Guardar producto
+    </button>
+
+</form>
 
 <!-- PRODUCTOS -->
 </h2>
