@@ -139,17 +139,7 @@
 
     </div>
 
-    </div>
 
-    <div id="cart-items">
-
-    </div>
-
-    </div>
-
-    </div>
-
-    </div>
 
     <!-- HERO -->
 
@@ -325,14 +315,14 @@
                 <p>{{ p.descripcion }}</p>
 
                 <div class="price">
-                    ₡{{ p.precio }}
+                    {{ p.precio }}
                 </div>
 
                 <button class="buy-btn"
                         onclick="agregarCarrito({
                             id:'{{ p.id }}',
                             n:'{{ p.nombre }}',
-                            p:'₡{{ p.precio }}',
+                            p:'{{ p.precio }}',
                             i:'{{ p.imagen.url }}'
                         })">
 

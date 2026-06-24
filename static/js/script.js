@@ -16,201 +16,35 @@ function cambiarSlide() {
 
 setInterval(cambiarSlide, 4000);
 
-/* =========================
-PRODUCTOS BASE
-========================= */
 
-const productosBase = [
 
-{
-c:"combos",
-n:"Repostería + Coca Cola 355ml",
-d:"Pastel de pollo, palmito o enchilada acompañado de Coca Cola 355ml.",
-p:"₡3,200",
-i:"combo-coca-cola.jpg"
-},
-
-{
-c:"combos",
-n:"Baguette + Patté",
-d:"Baguette con o sin queso acompañado de patté.",
-p:"₡2,400",
-i:"baguette-patte.jpg"
-},
-
-{
-c:"combos",
-n:"Baguette + Natilla",
-d:"Baguette con natilla pequeña incluida.",
-p:"₡2,400",
-i:"baguette-natilla.jpg"
-},
-
-{
-c:"salada",
-n:"Pastel de Pollo",
-d:"Pastel relleno de pollo recién horneado.",
-p:"₡980",
-i:"pastel-pollo.jpg"
-},
-
-{
-c:"salada",
-n:"Pastel de Carne",
-d:"Pastel relleno de carne de res.",
-p:"₡980",
-i:"pastel-carne-res.jpg"
-},
-
-{
-c:"panes",
-n:"Baguette Simple",
-d:"Pan baguette artesanal.",
-p:"₡630",
-i:"baguette-simple.jpg"
-},
-
-{
-c:"panes",
-n:"Baguette con Queso",
-d:"Baguette recién horneada con queso.",
-p:"₡690",
-i:"baguette-queso.jpg"
-},
-
-{
-c:"dulce",
-n:"Queque Seco",
-d:"Especial de mantequilla.",
-p:"₡3,850",
-i:"queque-seco.jpg"
-},
-
-{
-c:"dulce",
-n:"Prusianos",
-d:"Repostería dulce tradicional.",
-p:"₡1,200",
-i:"prusianos.jpg"
-}
-
-];
-
-/* =========================
-PRODUCTOS ADMIN
-========================= */
-
-const productosAdmin = JSON.parse(
-localStorage.getItem("productos")
-) || [];
-
-/* =========================
-UNIR PRODUCTOS
-========================= */
-
-const productos = [
-...productosBase,
-...productosAdmin
-];
-
-const grid = document.getElementById("grid");
-const filtros = document.querySelectorAll(".filter");
-
-function pintar(cat = "all") {
-
-    grid.innerHTML = "";
-
-    productos
-        .filter(p => cat === "all" || p.c === cat)
-        .forEach(p => {
-
-            grid.innerHTML += `
-
-<div class="card" onclick='abrir(${JSON.stringify(p)})'>
-
-<div class="tag">
-${p.c.toUpperCase()}
-</div>
-
-<img src="static/img/${p.i}" alt="${p.n}">
-
-<div class="card-body">
-
-<h3>${p.n}</h3>
-
-<p>${p.d}</p>
-
-<div class="price">${p.p}</div>
-
-<button class="buy-btn"
-onclick='event.stopPropagation(); agregarCarrito(${JSON.stringify(p)})'>
-
-Agregar al carrito
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-        });
-
-}
-
-function abrir(p) {
-
-    document.getElementById("mImg").src = "static/img/" + p.i;
-
-    document.getElementById("mNombre").innerText = p.n;
-
-    document.getElementById("mDesc").innerText = p.d;
-
-    document.getElementById("mPrecio").innerText = p.p;
-
-    document.getElementById("modal").style.display = "flex";
-
-}
-
-function cerrar() {
-
-    document.getElementById("modal").style.display = "none";
-
-}
-
-window.onclick = function (e) {
-
-    const modal = document.getElementById("modal");
-
-    if (e.target === modal) {
-        cerrar();
-    }
-
-}
-
-filtros.forEach(btn => {
-
-    btn.onclick = () => {
-
-        filtros.forEach(x => x.classList.remove("active"));
-
-        btn.classList.add("active");
-
-        pintar(btn.dataset.cat);
-
-    };
-
-});
-
-pintar();
+let carrito = [];
 
 /* =========================
 CARRITO
 ========================= */
 
+function agregarCarrito(producto){
 
-let carrito = [];
+    const existente = carrito.find(
+        item => item.id === producto.id
+    );
+
+    if(existente){
+
+        existente.cantidad++;
+
+    }else{
+
+        carrito.push({
+            ...producto,
+            cantidad:1
+        });
+
+    }
+
+    actualizarCarrito();
+}
 
 /* AGREGAR */
 
@@ -222,111 +56,72 @@ AGREGAR AL CARRITO
 AGREGAR PRODUCTO
 ========================= */
 
-function agregarCarrito(producto) {
 
-    const existente = carrito.find(
-        item => item.n === producto.n
-    );
-
-    if (existente) {
-
-        existente.cantidad += 1;
-
-    } else {
-
-        producto.cantidad = 1;
-
-        carrito.push(producto);
-
-    }
-
-    /* ABRIR CARRITO AUTOMÁTICO */
-
-    document
-        .getElementById("cartPanel")
-        .classList.add("active");
-
-    actualizarCarrito();
-
-}
 
 /* ACTUALIZAR */
 
 function actualizarCarrito() {
 
     const items = document.getElementById("cart-items");
-
     const total = document.getElementById("cart-total");
-
     const count = document.getElementById("cart-count");
 
     items.innerHTML = "";
 
     let totalPrecio = 0;
-
     let totalCantidad = 0;
 
     carrito.forEach((p, index) => {
 
-        const precioNumero = Number(
-            p.p.replace("₡", "")
-                .replace(",", "")
-        );
-
-        const subtotal = precioNumero * p.cantidad;
+        const subtotal = p.p * p.cantidad;
 
         totalPrecio += subtotal;
-
         totalCantidad += p.cantidad;
 
         items.innerHTML += `
 
-<div class="cart-item">
+        <div class="cart-item">
 
-<img src="static/img/${p.i}">
+            <img src="${p.i}" alt="${p.n}">
 
-<div class="cart-info">
+            <div class="cart-info">
 
-<h4>${p.n}</h4>
+                <h4>${p.n}</h4>
 
-<p>${p.p}</p>
+                <p>₡${p.p}</p>
 
-<div class="cart-controls">
+                <div class="cart-controls">
 
-<button onclick="cambiarCantidad(${index},-1)">
-−
-</button>
+                    <button onclick="cambiarCantidad(${index},-1)">
+                        −
+                    </button>
 
-<span>
-${p.cantidad}
-</span>
+                    <span>
+                        ${p.cantidad}
+                    </span>
 
-<button onclick="cambiarCantidad(${index},1)">
-+
-</button>
+                    <button onclick="cambiarCantidad(${index},1)">
+                        +
+                    </button>
 
-</div>
+                </div>
 
-<div class="cart-price">
+                <div class="cart-price">
+                    ₡${subtotal.toLocaleString()}
+                </div>
 
-₡${subtotal}
+            </div>
 
-</div>
+        </div>
 
-</div>
-
-</div>
-
-`;
-
+        `;
     });
 
-    total.innerText = `Total: ₡${totalPrecio}`;
+    total.innerText =
+        `Total: ₡${totalPrecio.toLocaleString()}`;
 
     count.innerText = totalCantidad;
-
 }
-
 function cambiarCantidad(index, cambio) {
 
     carrito[index].cantidad += cambio;
@@ -374,9 +169,7 @@ function mostrarFormulario() {
     if (carrito.length === 0) {
 
         alert("Tu carrito está vacío");
-
         return;
-
     }
 
     document
@@ -384,21 +177,17 @@ function mostrarFormulario() {
         .style.display = "flex";
 
     let resumen = "";
-
     let total = 0;
 
     carrito.forEach(item => {
 
-        const precio = Number(
-            item.p.replace("₡", "")
-                .replace(",", "")
-        );
-
-        const subtotal = precio * item.cantidad;
+        const subtotal =
+            item.p * item.cantidad;
 
         total += subtotal;
 
-        resumen += `${item.cantidad}x ${item.n} - ₡${subtotal}\n`;
+        resumen +=
+            `${item.cantidad}x ${item.n} - ₡${subtotal}\n`;
 
     });
 
@@ -407,7 +196,6 @@ function mostrarFormulario() {
     document
         .getElementById("productosPedido")
         .value = resumen;
-
 }
 
 function cerrarPedido() {
@@ -457,11 +245,10 @@ let totalPedido = 0;
 
 carrito.forEach(item => {
 
-const precio = Number(
-item.p.replace("₡","").replace(",","")
-);
+    totalPedido +=
+        item.p * item.cantidad;
 
-totalPedido += precio * item.cantidad;
+});
 
 });
 
@@ -527,7 +314,7 @@ window.location.href = url;
 
 }, 300);
 
-});
+
 
 
 
