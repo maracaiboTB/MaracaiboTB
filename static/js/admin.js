@@ -9,6 +9,7 @@ function abrirModal(
     descripcion,
     categoria,
     stock,
+    imagen,
     tallas
 ){
 
@@ -24,6 +25,7 @@ function abrirModal(
     document.getElementById("editCategoria").value = categoria;
     document.getElementById("editStock").value = stock;
     document.getElementById("editTallas").value = tallas;
+    document.getElementById("previewImagen").src = imagen;
 
 }
 

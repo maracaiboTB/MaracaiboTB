@@ -152,18 +152,18 @@
                         <td>
 
                             <div class="acciones">
-                                <button type="button" class="btn-edit" onclick="abrirModal(
+                            <button type="button" class="btn-edit"
+                                onclick="abrirModal(
                                     '{{ p.id }}',
                                     '{{ p.nombre|escapejs }}',
                                     '{{ p.precio }}',
                                     '{{ p.descripcion|escapejs }}',
                                     '{{ p.categoria }}',
                                     '{{ p.stock }}',
+                                    '{{ p.imagen.url }}',
                                     '{{ p.tallas|escapejs }}'
                                 )">
-
                                     ✏️ Editar
-
                                 </button>
                                 <a href="{% url 'eliminar_producto' p.id %}" class="btn-delete"
                                     onclick="return confirm('¿Eliminar este producto?')">
@@ -241,6 +241,18 @@
                 <input type="number" id="editStock" name="stock" placeholder="Stock">
 
                 <input type="text" id="editTallas" name="tallas" placeholder="Tallas">
+                    <!-- Vista previa de la imagen actual -->
+                    <img id="previewImagen"
+                        src=""
+                        width="120"
+                        style="border-radius:10px; margin:10px 0;">
+
+                    <!-- Nueva imagen -->
+                    <input
+                        type="file"
+                        id="editImagen"
+                        name="imagen"
+                        accept="image/*">
 
                 <button type="submit">
                     Guardar cambios
@@ -252,44 +264,104 @@
 
     </div>
 
+<div id="tab-pedidos" style="display:none;">
 
+    <div class="admin-products">
 
+        <h2>🛒 Pedidos recibidos</h2>
 
+        <table class="productos-table">
 
-
-    <!-- PEDIDOS -->
-    <div id="vistaPedidos" style="display:none;">
-
-        <h2>Pedidos Recibidos</h2>
-
-        <div id="resumenPedidos"></div>
-
-        <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>Cliente</th>
+                    <th>Teléfono</th>
                     <th>Total</th>
+                    <th>Método</th>
                     <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
 
-            <tbody id="tablaPedidos"></tbody>
+            <tbody>
+
+                {% for pedido in pedidos %}
+
+                <tr>
+
+                    <td>{{ pedido.id }}</td>
+
+                    <td>{{ pedido.nombre }}</td>
+
+                    <td>{{ pedido.telefono }}</td>
+
+                    <td>₡{{ pedido.total }}</td>
+
+                    <td>{{ pedido.metodo_pago }}</td>
+
+                    <td>
+
+                        {% if pedido.estado == "Pendiente" %}
+                            <span class="estado pendiente">
+                                Pendiente
+                            </span>
+
+                        {% elif pedido.estado == "Preparando" %}
+                            <span class="estado preparando">
+                                Preparando
+                            </span>
+
+                        {% elif pedido.estado == "Entregado" %}
+                            <span class="estado entregado">
+                                Entregado
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>{{ pedido.fecha }}</td>
+
+                    <td>
+
+                        <button
+                            class="btn-edit"
+                            onclick="verPedido('{{ pedido.id }}')">
+
+                            👁 Ver
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="8">
+
+                        No hay pedidos registrados.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
         </table>
 
     </div>
 
+</div>
+
     <!-- CONFIG -->
-    <div id="vistaConfig" style="display:none;">
 
-        <h2>Configuración</h2>
-
-        <p>Aquí luego metemos banner, WhatsApp, etc.</p>
-
-    </div>
-
-    </div>
-    </div>
 
 
 <script src="{% static 'js/admin.js' %}"></script>

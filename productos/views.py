@@ -127,6 +127,13 @@ def editar_producto(request, id):
         producto.categoria = request.POST.get("categoria")
         producto.stock = request.POST.get("stock")
         producto.tallas = request.POST.get("tallas")
+       
+        
+        
+        
+        if request.FILES.get("imagen"):
+            producto.imagen = request.FILES["imagen"]
+
 
         producto.save()
 
