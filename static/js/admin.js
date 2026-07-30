@@ -172,4 +172,111 @@ function mostrarTab(tab){
         "tab-" + tab
     ).style.display = "block";
 
+    if (tab === "pedidos"){
+        const filtroActivo = document.querySelector(
+            ".filtro-pedido.active"
+        );
+        filtrarPedidos(
+            filtroActivo ? filtroActivo.dataset.filtro : "Activos",
+            filtroActivo
+        );
+    }
+}
+
+function verPedido(id){
+    const detalle = document.getElementById(`detalle-pedido-${id}`);
+    detalle.style.display =
+        detalle.style.display === "none" ? "table-row" : "none";
+}
+
+function filtrarPedidos(filtro, boton){
+    document.querySelectorAll(".filtro-pedido").forEach(item => {
+        item.classList.remove("active");
+    });
+    if (boton){
+        boton.classList.add("active");
+        boton.dataset.filtro = filtro;
+    }
+
+    document.querySelectorAll(".fila-pedido").forEach(fila => {
+        const estado = fila.dataset.estado;
+        const esActivo = !["Entregado", "Cancelado"].includes(estado);
+        const mostrar =
+            filtro === "Todos" ||
+            (filtro === "Activos" && esActivo) ||
+            estado === filtro;
+
+        fila.style.display = mostrar ? "table-row" : "none";
+
+        if (!mostrar){
+            const detalle = document.getElementById(
+                `detalle-pedido-${fila.id.replace("pedido-", "")}`
+            );
+            if (detalle){
+                detalle.style.display = "none";
+            }
+        }
+    });
+}
+
+async function actualizarEstadoPedido(id, estado, enviarWhatsapp){
+    if (
+        estado === "Cancelado" &&
+        !confirm("¿Seguro que deseas cancelar este pedido?")
+    ){
+        return;
+    }
+
+    const ventanaWhatsapp = enviarWhatsapp
+        ? window.open("", "_blank")
+        : null;
+    const formData = new FormData();
+    formData.append("estado", estado);
+
+    try {
+        const response = await fetch(`/pedido/${id}/estado/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken":
+                    document.querySelector(
+                        "[name=csrfmiddlewaretoken]"
+                    ).value
+            },
+            body: formData
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success){
+            throw new Error(data.error || "No se pudo actualizar el pedido");
+        }
+
+        if (ventanaWhatsapp){
+            const numeroOrden = data.numero_orden
+                ? `#${data.numero_orden}`
+                : `pedido #${id}`;
+            const mensajes = {
+                Preparando:
+                    `Hola ${data.nombre} 👋 Ya estamos preparando tu pedido. Tu número de orden es ${numeroOrden}. Te avisaremos cuando esté listo.`,
+                Listo:
+                    `Hola ${data.nombre} 👋 Tu orden ${numeroOrden} ya está lista. ¡Te esperamos!`,
+                Cancelado:
+                    `Hola ${data.nombre}. Te informamos que tu ${numeroOrden} fue cancelada. Si necesitas ayuda, escríbenos.`
+            };
+            let telefono = data.telefono.replace(/\D/g, "");
+            if (telefono.length === 8){
+                telefono = `506${telefono}`;
+            }
+            ventanaWhatsapp.location.href =
+                `https://wa.me/${telefono}?text=${encodeURIComponent(
+                    mensajes[estado]
+                )}`;
+        }
+
+        window.setTimeout(() => window.location.reload(), 500);
+    } catch (error) {
+        if (ventanaWhatsapp){
+            ventanaWhatsapp.close();
+        }
+        alert(error.message);
+    }
 }

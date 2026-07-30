@@ -270,11 +270,50 @@
 
         <h2>🛒 Pedidos recibidos</h2>
 
+        <div class="filtros-pedidos">
+            <button type="button" class="filtro-pedido active"
+                data-filtro="Activos"
+                onclick="filtrarPedidos('Activos', this)">
+                Activos
+            </button>
+            <button type="button" class="filtro-pedido"
+                data-filtro="Pendiente"
+                onclick="filtrarPedidos('Pendiente', this)">
+                Pendientes
+            </button>
+            <button type="button" class="filtro-pedido"
+                data-filtro="Preparando"
+                onclick="filtrarPedidos('Preparando', this)">
+                Preparando
+            </button>
+            <button type="button" class="filtro-pedido"
+                data-filtro="Listo"
+                onclick="filtrarPedidos('Listo', this)">
+                Listos
+            </button>
+            <button type="button" class="filtro-pedido"
+                data-filtro="Entregado"
+                onclick="filtrarPedidos('Entregado', this)">
+                Entregados
+            </button>
+            <button type="button" class="filtro-pedido"
+                data-filtro="Cancelado"
+                onclick="filtrarPedidos('Cancelado', this)">
+                Cancelados
+            </button>
+            <button type="button" class="filtro-pedido"
+                data-filtro="Todos"
+                onclick="filtrarPedidos('Todos', this)">
+                Todos
+            </button>
+        </div>
+
         <table class="productos-table">
 
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Orden</th>
                     <th>Cliente</th>
                     <th>Teléfono</th>
                     <th>Total</th>
@@ -289,9 +328,19 @@
 
                 {% for pedido in pedidos %}
 
-                <tr>
+                <tr id="pedido-{{ pedido.id }}"
+                    class="fila-pedido"
+                    data-estado="{{ pedido.estado }}">
 
                     <td>{{ pedido.id }}</td>
+
+                    <td>
+                        {% if pedido.numero_orden %}
+                            <strong>#{{ pedido.numero_orden }}</strong>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
 
                     <td>{{ pedido.nombre }}</td>
 
@@ -303,22 +352,9 @@
 
                     <td>
 
-                        {% if pedido.estado == "Pendiente" %}
-                            <span class="estado pendiente">
-                                Pendiente
-                            </span>
-
-                        {% elif pedido.estado == "Preparando" %}
-                            <span class="estado preparando">
-                                Preparando
-                            </span>
-
-                        {% elif pedido.estado == "Entregado" %}
-                            <span class="estado entregado">
-                                Entregado
-                            </span>
-
-                        {% endif %}
+                        <span class="estado {{ pedido.estado|lower }}">
+                            {{ pedido.estado }}
+                        </span>
 
                     </td>
 
@@ -326,23 +362,103 @@
 
                     <td>
 
-                        <button
-                            class="btn-edit"
-                            onclick="verPedido('{{ pedido.id }}')">
+                        <div class="acciones acciones-pedido">
+                            <button type="button" class="btn-edit"
+                                onclick="verPedido('{{ pedido.id }}')">
+                                👁 Ver
+                            </button>
 
-                            👁 Ver
+                            {% if pedido.estado == "Pendiente" %}
+                            <button type="button" class="btn-preparando"
+                                onclick="actualizarEstadoPedido(
+                                    '{{ pedido.id }}',
+                                    'Preparando',
+                                    true
+                                )">
+                                👨‍🍳 Preparando
+                            </button>
+                            {% elif pedido.estado == "Preparando" %}
+                            <button type="button" class="btn-listo"
+                                onclick="actualizarEstadoPedido(
+                                    '{{ pedido.id }}',
+                                    'Listo',
+                                    true
+                                )">
+                                ✅ Listo
+                            </button>
+                            {% elif pedido.estado == "Listo" %}
+                            <button type="button" class="btn-entregado"
+                                onclick="actualizarEstadoPedido(
+                                    '{{ pedido.id }}',
+                                    'Entregado',
+                                    false
+                                )">
+                                📦 Entregado
+                            </button>
+                            {% endif %}
 
-                        </button>
+                            {% if pedido.estado != "Entregado" and pedido.estado != "Cancelado" %}
+                            <button type="button" class="btn-cancelar"
+                                onclick="actualizarEstadoPedido(
+                                    '{{ pedido.id }}',
+                                    'Cancelado',
+                                    true
+                                )">
+                                ✕ Cancelar
+                            </button>
+                            {% endif %}
+                        </div>
 
                     </td>
 
+                </tr>
+
+                <tr id="detalle-pedido-{{ pedido.id }}"
+                    class="detalle-pedido"
+                    data-pedido="{{ pedido.id }}"
+                    style="display:none;">
+                    <td colspan="9">
+                        <div class="detalle-grid">
+                            <div>
+                                <strong>Dirección</strong>
+                                <p>{{ pedido.direccion }}</p>
+                            </div>
+                            <div>
+                                <strong>Comentarios</strong>
+                                <p>{{ pedido.comentarios|default:"Sin comentarios" }}</p>
+                            </div>
+                            <div>
+                                <strong>Productos</strong>
+                                <ul>
+                                    {% for detalle in pedido.detallepedido_set.all %}
+                                    <li>
+                                        {{ detalle.cantidad }} ×
+                                        {{ detalle.producto.nombre }} —
+                                        ₡{{ detalle.precio }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% if pedido.comprobante %}
+                            <div>
+                                <strong>Comprobante</strong>
+                                <p>
+                                    <a href="{{ pedido.comprobante.url }}"
+                                       target="_blank" rel="noopener">
+                                        Ver comprobante
+                                    </a>
+                                </p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </td>
                 </tr>
 
                 {% empty %}
 
                 <tr>
 
-                    <td colspan="8">
+                    <td colspan="9">
 
                         No hay pedidos registrados.
 

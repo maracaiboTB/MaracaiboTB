@@ -32,9 +32,23 @@ class Pedido(models.Model):
         default='Pendiente'
     )
 
+    numero_orden = models.PositiveIntegerField(
+        unique=True,
+        blank=True,
+        null=True
+    )
 
 
-    from productos.models import Producto
+
+    @property
+    def total(self):
+        return sum(
+            detalle.precio * detalle.cantidad
+            for detalle in self.detallepedido_set.all()
+        )
+
+    def __str__(self):
+        return f"Pedido #{self.pk} - {self.nombre}"
 
 class DetallePedido(models.Model):
 

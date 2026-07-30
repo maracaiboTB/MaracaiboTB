@@ -381,6 +381,7 @@ PEGAR ARRIBA DEL FOOTER
             <h2>Finalizar pedido</h2>
 
             <form id="pedidoForm">
+                {% csrf_token %}
 
                 <input type="text" id="nombre" placeholder="Nombre completo" required>
 

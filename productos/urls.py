@@ -10,6 +10,12 @@ urlpatterns = [
     ),
 
     path(
+        'crear-pedido/',
+        views.crear_pedido,
+        name='crear_pedido'
+    ),
+
+    path(
         "login/",
         views.login_admin,
         name="login_admin"
@@ -31,6 +37,12 @@ urlpatterns = [
     "eliminar-producto/<int:id>/",
     views.eliminar_producto,
     name="eliminar_producto"
+    ),
+
+    path(
+        "pedido/<int:id>/estado/",
+        views.actualizar_estado_pedido,
+        name="actualizar_estado_pedido"
     ),
 
     path(

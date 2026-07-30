@@ -212,67 +212,47 @@ ENVIAR PEDIDO
 
 document
 .getElementById("pedidoForm")
-.addEventListener("submit", function (e) {
+.addEventListener("submit", async function (e) {
 
 e.preventDefault();
-
-const nombre =
-document.getElementById("nombre").value;
-
-const telefono =
-document.getElementById("telefono").value;
-
-const direccion =
-document.getElementById("direccion").value;
-
-const metodoPago =
-document.getElementById("metodoPago").value;
-
-const comentarios =
-document.getElementById("comentarios").value;
-
-const productos =
-document.getElementById("productosPedido").value;
-
-/* =========================
-GUARDAR PEDIDO (PRIMERO SIEMPRE)
-========================= */
-
-const pedidos =
-JSON.parse(localStorage.getItem("pedidos")) || [];
 
 let totalPedido = 0;
 
 carrito.forEach(item => {
-
-    totalPedido +=
-        item.p * item.cantidad;
-
+    totalPedido += Number(item.p) * item.cantidad;
 });
 
-});
+const formData = new FormData();
+formData.append("nombre", document.getElementById("nombre").value);
+formData.append("telefono", document.getElementById("telefono").value);
+formData.append("direccion", document.getElementById("direccion").value);
+formData.append("metodo_pago", document.getElementById("metodoPago").value);
+formData.append("comentarios", document.getElementById("comentarios").value);
+formData.append("productos", JSON.stringify(
+    carrito.map(item => ({
+        id: item.id,
+        cantidad: item.cantidad
+    }))
+));
 
-const nuevoPedido = {
+const comprobante = document.getElementById("comprobante").files[0];
+if (comprobante) {
+    formData.append("comprobante", comprobante);
+}
 
-id: Date.now(),
-nombre,
-telefono,
-direccion,
-productos,
-total: totalPedido,
-metodoPago,
-comentarios,
-fecha: new Date().toLocaleString(),
-estado: "Pendiente"
-
-};
-
-pedidos.push(nuevoPedido);
-
-localStorage.setItem(
-"pedidos",
-JSON.stringify(pedidos)
-);
+try {
+    const response = await fetch("/crear-pedido/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken":
+                this.querySelector("[name=csrfmiddlewaretoken]").value
+        },
+        body: formData
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+        throw new Error(data.error || "No se pudo guardar el pedido");
+    }
 
 /* =========================
 WHATSAPP DESPUÉS
@@ -281,9 +261,10 @@ WHATSAPP DESPUÉS
 const mensaje = `
 🥐 Nuevo Pedido
 
-Nombre: ${nombre}
-Tel: ${telefono}    
-Dirección: ${direccion}
+Pedido: #${data.pedido_id}
+Nombre: ${document.getElementById("nombre").value}
+Tel: ${document.getElementById("telefono").value}
+Dirección: ${document.getElementById("direccion").value}
 Total: ₡${totalPedido}
 `;
 
@@ -292,31 +273,19 @@ const numero = "50686725494";
 const url =
 `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 
-/* limpiar carrito antes de salir */
+cerrarPedido();
 carrito = [];
 actualizarCarrito();
-cerrarPedido();
-
-/* cerrar pedido */
-cerrarPedido();
-
-/* limpiar carrito */
-carrito = [];
-actualizarCarrito();
-
-/* limpiar formulario */
 this.reset();
 
-/* abrir whatsapp con pequeño delay */
 setTimeout(() => {
-
-window.location.href = url;
-
+    window.location.href = url;
 }, 300);
+} catch (error) {
+    mostrarToast(error.message, "error");
+}
 
-
-
-
+});
 
 /* =========================
 PREVIEW COMPROBANTE
@@ -349,6 +318,11 @@ const preview =
 document.getElementById("previewComprobante");
 const uploadBox =
 document.getElementById("uploadBox");
+
+function verificarMetodoPago(){
+    uploadBox.style.display =
+        metodoPago.value === "Sinpe" ? "block" : "none";
+}
 
 metodoPago.addEventListener("change", function(){
 
