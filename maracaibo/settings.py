@@ -158,9 +158,15 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+MEDIA_STORAGE_BACKEND = (
+    'maracaibo.storage.CloudinaryMediaStorage'
+    if os.environ.get('CLOUDINARY_URL')
+    else 'django.core.files.storage.FileSystemStorage'
+)
+
 STORAGES = {
     'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        'BACKEND': MEDIA_STORAGE_BACKEND,
     },
     'staticfiles': {
         'BACKEND': (
