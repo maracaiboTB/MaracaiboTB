@@ -435,6 +435,20 @@ ACCIONES
     font-weight: 600;
 }
 
+.admin-error {
+    margin: 20px 0;
+    padding: 16px 20px;
+    border: 1px solid #fecaca;
+    border-radius: 14px;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.admin-error p {
+    margin: 6px 0 0;
+    overflow-wrap: anywhere;
+}
+
 .acciones-pedido {
     flex-wrap: wrap;
     min-width: 260px;

@@ -56,6 +56,13 @@
     </header>
     <div id="tab-productos">
 
+        {% if error_producto %}
+        <div class="admin-error">
+            <strong>Error al guardar el producto</strong>
+            <p>{{ error_producto }}</p>
+        </div>
+        {% endif %}
+
         <!-- FORMULARIO -->
 
         <div class="admin-form">

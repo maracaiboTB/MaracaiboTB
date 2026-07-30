@@ -8,6 +8,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db import transaction
 import json
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def login_admin(request):
@@ -123,23 +127,34 @@ def admin_productos(request):
 
     if request.method == "POST":
 
-        Producto.objects.create(
-
-            nombre=request.POST['nombre'],
-
-            precio=request.POST['precio'],
-
-            descripcion=request.POST['descripcion'],
-
-            categoria=request.POST['categoria'],
-
-            stock=request.POST['stock'],
-
-            tallas=request.POST['tallas'],
-
-            imagen=request.FILES['imagen']
-
-        )
+        try:
+            Producto.objects.create(
+                nombre=request.POST['nombre'],
+                precio=request.POST['precio'],
+                descripcion=request.POST['descripcion'],
+                categoria=request.POST['categoria'],
+                stock=request.POST['stock'],
+                tallas=request.POST['tallas'],
+                imagen=request.FILES['imagen']
+            )
+        except Exception as error:
+            logger.exception("No se pudo crear el producto")
+            productos = Producto.objects.all()
+            pedidos = Pedido.objects.prefetch_related(
+                "detallepedido_set"
+            ).order_by("-fecha")
+            return render(
+                request,
+                'admin.html',
+                {
+                    'productos': productos,
+                    'pedidos': pedidos,
+                    'error_producto': (
+                        f"No se pudo guardar la imagen: {error}"
+                    )
+                },
+                status=400
+            )
 
         return redirect('admin_productos')
 
@@ -186,7 +201,14 @@ def editar_producto(request, id):
             producto.imagen = request.FILES["imagen"]
 
 
-        producto.save()
+        try:
+            producto.save()
+        except Exception as error:
+            logger.exception("No se pudo editar el producto")
+            return JsonResponse({
+                "success": False,
+                "error": f"No se pudo guardar la imagen: {error}"
+            }, status=400)
 
         return JsonResponse({
             "success": True

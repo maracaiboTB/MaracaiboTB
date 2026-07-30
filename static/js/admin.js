@@ -132,7 +132,7 @@ if(formEditar){
                 }else{
 
                     alert(
-                        "No se pudo actualizar"
+                        data.error || "No se pudo actualizar"
                     );
 
                 }
