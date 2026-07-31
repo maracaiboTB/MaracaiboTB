@@ -13,6 +13,11 @@ class Pedido(models.Model):
 
     metodo_pago = models.CharField(max_length=20)
 
+    estado_pago = models.CharField(
+        max_length=30,
+        default="Pendiente de pago"
+    )
+
     comentarios = models.TextField(
         blank=True
     )
@@ -63,6 +68,11 @@ class DetallePedido(models.Model):
     )
 
     cantidad = models.IntegerField()
+
+    opcion = models.CharField(
+        max_length=100,
+        blank=True
+    )
 
     precio = models.DecimalField(
         max_digits=10,

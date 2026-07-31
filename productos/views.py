@@ -1,5 +1,4 @@
-from django.shortcuts import render, redirect
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from pedidos.models import Pedido, DetallePedido
 from django.contrib.auth import authenticate, login, logout
 from .models import Producto
@@ -7,11 +6,49 @@ from django.contrib.auth.decorators import login_required
 
 from django.http import JsonResponse
 from django.db import transaction
+from django.db.models import Q
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
+from django.urls import reverse
 import json
 import logging
+from decimal import Decimal, InvalidOperation
 
 
 logger = logging.getLogger(__name__)
+
+
+def convertir_precio(valor, nombre, obligatorio=True):
+    texto = str(valor or "").strip().replace(",", ".")
+    if not texto:
+        if obligatorio:
+            raise ValueError(f"El {nombre} es obligatorio")
+        return None
+    try:
+        precio = Decimal(texto)
+    except InvalidOperation as error:
+        raise ValueError(
+            f"El {nombre} debe ser un número válido"
+        ) from error
+    if precio < 0:
+        raise ValueError(f"El {nombre} no puede ser negativo")
+    return precio
+
+
+def convertir_fecha(valor):
+    if not valor:
+        return None
+    fecha = parse_datetime(valor)
+    if fecha and timezone.is_naive(fecha):
+        fecha = timezone.make_aware(fecha)
+    return fecha
+
+
+def convertir_categoria(valor):
+    categoria = str(valor or "").strip().lower()
+    if categoria not in {"dulce", "salado"}:
+        raise ValueError("La categoría debe ser Dulces o Salados")
+    return categoria
 
 
 def login_admin(request):
@@ -46,32 +83,32 @@ def logout_admin(request):
     return redirect("login_admin")
 
 
-@login_required
-def admin_panel(request):
-
-    productos = Producto.objects.all()
-    pedidos = Pedido.objects.all()
-
-    return render(
-        request,
-        "admin.html",
-        {
-            "productos": productos,
-            "pedidos": pedidos
-        }
-    )
-
 def index(request):
 
     productos = Producto.objects.filter(
         activo=True
+    )
+    ahora = timezone.now()
+    destacados = productos.filter(
+        Q(
+            en_promocion=True,
+            precio_promocional__isnull=False
+        ) | Q(es_combo=True)
+    ).filter(
+        Q(destacado_desde__isnull=True) | Q(destacado_desde__lte=ahora),
+        Q(destacado_hasta__isnull=True) | Q(destacado_hasta__gte=ahora)
     )
 
     return render(
         request,
         'index.html',
         {
-            'productos': productos
+            'productos': productos,
+            'destacados': destacados,
+            'hay_combos': productos.filter(es_combo=True).exists(),
+            'hay_promociones': productos.filter(
+                en_promocion=True
+            ).exists()
         }
     )
 
@@ -85,13 +122,22 @@ def crear_pedido(request):
         if not items:
             raise ValueError("El carrito está vacío")
 
+        metodo_pago = request.POST.get("metodo_pago", "").strip()
+        comprobante = request.FILES.get("comprobante")
+        estado_pago = (
+            "Comprobante enviado"
+            if metodo_pago == "Sinpe" and comprobante
+            else "Pendiente de pago"
+        )
+
         pedido = Pedido.objects.create(
             nombre=request.POST.get("nombre", "").strip(),
             telefono=request.POST.get("telefono", "").strip(),
             direccion=request.POST.get("direccion", "").strip(),
-            metodo_pago=request.POST.get("metodo_pago", "").strip(),
+            metodo_pago=metodo_pago,
+            estado_pago=estado_pago,
             comentarios=request.POST.get("comentarios", "").strip(),
-            comprobante=request.FILES.get("comprobante")
+            comprobante=comprobante
         )
         if not pedido.nombre or not pedido.telefono or not pedido.direccion:
             raise ValueError("Faltan datos obligatorios")
@@ -101,11 +147,18 @@ def crear_pedido(request):
             cantidad = int(item["cantidad"])
             if cantidad < 1:
                 raise ValueError("Cantidad inválida")
+            opcion = str(item.get("opcion", "")).strip()
+            opciones_validas = producto.lista_bebidas
+            if opciones_validas and opcion not in opciones_validas:
+                raise ValueError(
+                    f"Seleccioná una opción válida para {producto.nombre}"
+                )
             DetallePedido.objects.create(
                 pedido=pedido,
                 producto=producto,
                 cantidad=cantidad,
-                precio=producto.precio
+                opcion=opcion,
+                precio=producto.precio_venta
             )
 
         return JsonResponse({
@@ -128,13 +181,34 @@ def admin_productos(request):
     if request.method == "POST":
 
         try:
+            tipo_publicacion = request.POST.get(
+                "tipo_publicacion", "producto"
+            )
             Producto.objects.create(
                 nombre=request.POST['nombre'],
                 precio=request.POST['precio'],
+                en_promocion=tipo_publicacion == "promocion",
+                es_combo=tipo_publicacion == "combo",
+                opciones_bebida=request.POST.get(
+                    "opciones_bebida", ""
+                ).strip(),
+                etiqueta_destacado=request.POST.get(
+                    "etiqueta_destacado", ""
+                ).strip(),
+                destacado_desde=convertir_fecha(
+                    request.POST.get("destacado_desde")
+                ),
+                destacado_hasta=convertir_fecha(
+                    request.POST.get("destacado_hasta")
+                ),
+                precio_promocional=(
+                    request.POST.get("precio_promocional") or None
+                ),
                 descripcion=request.POST['descripcion'],
-                categoria=request.POST['categoria'],
+                categoria=convertir_categoria(
+                    request.POST.get("categoria")
+                ),
                 stock=request.POST['stock'],
-                tallas=request.POST['tallas'],
                 imagen=request.FILES['imagen']
             )
         except Exception as error:
@@ -175,8 +249,6 @@ def admin_productos(request):
 
 
 
-from django.http import JsonResponse
-
 @login_required
 def editar_producto(request, id):
 
@@ -187,12 +259,52 @@ def editar_producto(request, id):
 
     if request.method == "POST":
 
+        tipo_publicacion = request.POST.get(
+            "tipo_publicacion", "producto"
+        )
+        en_promocion = tipo_publicacion == "promocion"
+
         producto.nombre = request.POST.get("nombre")
-        producto.precio = request.POST.get("precio")
+        try:
+            producto.precio = convertir_precio(
+                request.POST.get("precio"),
+                "precio normal"
+            )
+            producto.precio_promocional = convertir_precio(
+                request.POST.get("precio_promocional"),
+                "precio promocional",
+                obligatorio=en_promocion
+            )
+        except ValueError as error:
+            return JsonResponse(
+                {"success": False, "error": str(error)},
+                status=400
+            )
+        producto.en_promocion = en_promocion
+        producto.es_combo = tipo_publicacion == "combo"
+        producto.opciones_bebida = request.POST.get(
+            "opciones_bebida", ""
+        ).strip()
+        producto.etiqueta_destacado = request.POST.get(
+            "etiqueta_destacado", ""
+        ).strip()
+        producto.destacado_desde = convertir_fecha(
+            request.POST.get("destacado_desde")
+        )
+        producto.destacado_hasta = convertir_fecha(
+            request.POST.get("destacado_hasta")
+        )
         producto.descripcion = request.POST.get("descripcion")
-        producto.categoria = request.POST.get("categoria")
+        try:
+            producto.categoria = convertir_categoria(
+                request.POST.get("categoria")
+            )
+        except ValueError as error:
+            return JsonResponse(
+                {"success": False, "error": str(error)},
+                status=400
+            )
         producto.stock = request.POST.get("stock")
-        producto.tallas = request.POST.get("tallas")
        
         
         
@@ -207,7 +319,7 @@ def editar_producto(request, id):
             logger.exception("No se pudo editar el producto")
             return JsonResponse({
                 "success": False,
-                "error": f"No se pudo guardar la imagen: {error}"
+                "error": f"No se pudo actualizar el producto: {error}"
             }, status=400)
 
         return JsonResponse({
@@ -270,3 +382,15 @@ def actualizar_estado_pedido(request, id):
         "nombre": pedido.nombre,
         "telefono": pedido.telefono
     })
+
+
+@login_required
+def actualizar_pago_pedido(request, id):
+    if request.method != "POST":
+        return redirect("admin_productos")
+
+    pedido = get_object_or_404(Pedido, id=id)
+    pedido.estado_pago = "Pagado"
+    pedido.save(update_fields=["estado_pago"])
+
+    return redirect(f"{reverse('admin_productos')}?tab=pedidos")

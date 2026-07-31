@@ -26,20 +26,17 @@
 
     <div class="admin-tabs">
 
-        <button class="tab-btn active" onclick="mostrarTab('productos')">
+        <button class="tab-btn active" data-tab="productos"
+            onclick="mostrarTab('productos', this); filtrarTipoProducto('todos')">
             <span>📦</span>
 
             Productos
         </button>
 
-        <button class="tab-btn" onclick="mostrarTab('pedidos')">
+        <button class="tab-btn" data-tab="pedidos"
+            onclick="mostrarTab('pedidos', this)">
             <span>🛒</span>
             Pedidos
-        </button>
-
-        <button class="tab-btn" onclick="mostrarTab('config')">
-            <span>⚙️</span>
-            Configuración
         </button>
 
     </div>
@@ -79,18 +76,57 @@
 
                     <input type="number" name="precio" placeholder="Precio" required>
 
+                    <input type="number" name="precio_promocional"
+                        class="promo-field"
+                        placeholder="Precio promocional (opcional)"
+                        min="0" step="0.01">
+
+                    <select name="tipo_publicacion" id="tipoPublicacion"
+                        onchange="actualizarConstructor('crear')">
+                        <option value="producto">Producto normal</option>
+                        <option value="combo">Combo especial</option>
+                        <option value="promocion">Promoción</option>
+                    </select>
+
+                    <div class="builder-field destacado-field">
+                        <label>Texto de la etiqueta</label>
+                        <input type="text" name="etiqueta_destacado"
+                            placeholder="Ej: Desayuno especial" maxlength="40">
+                    </div>
+
+                    <div class="builder-field destacado-field">
+                        <label>Disponible desde (opcional)</label>
+                        <input type="datetime-local" name="destacado_desde">
+                    </div>
+
+                    <div class="builder-field destacado-field">
+                        <label>Disponible hasta (opcional)</label>
+                        <input type="datetime-local" name="destacado_hasta">
+                    </div>
+
+                    <div class="option-builder combo-field full"
+                        data-hidden-input="opcionesBebidaCrear">
+                        <label>Opciones de bebida o acompañamiento</label>
+                        <div class="option-entry">
+                            <input type="text" class="option-input"
+                                placeholder="Ej: Café con leche">
+                            <button type="button" onclick="agregarOpcion(this)">
+                                + Agregar opción
+                            </button>
+                        </div>
+                        <div class="option-chips"></div>
+                        <input type="hidden" id="opcionesBebidaCrear"
+                            name="opciones_bebida">
+                    </div>
+
                     <select name="categoria">
 
-                        <option value="combos">Combos</option>
-                        <option value="panes">Panes</option>
-                        <option value="dulce">Dulce</option>
-                        <option value="salada">Salada</option>
+                        <option value="dulce">Dulces</option>
+                        <option value="salado">Salados</option>
 
                     </select>
 
                     <input type="number" name="stock" placeholder="Stock" required>
-
-                    <input type="text" name="tallas" placeholder="Tallas">
 
                     <input type="file" name="imagen" class="file-input" required>
 
@@ -111,13 +147,26 @@
 
         <div class="admin-products">
 
-            <div class="search-box">
-
-                <input type="text" id="buscarProducto" placeholder="🔍 Buscar producto...">
-
-            </div>
-
             <h2>Productos registrados</h2>
+
+            <div class="filtros-tipo-producto">
+                <button type="button" class="filtro-tipo active"
+                    onclick="filtrarTipoProducto('todos', this)">
+                    Todos
+                </button>
+                <button type="button" class="filtro-tipo"
+                    onclick="filtrarTipoProducto('producto', this)">
+                    📦 Productos normales
+                </button>
+                <button type="button" class="filtro-tipo"
+                    onclick="filtrarTipoProducto('combo', this)">
+                    🥐 Combos
+                </button>
+                <button type="button" class="filtro-tipo"
+                    onclick="filtrarTipoProducto('promocion', this)">
+                    🏷️ Promociones
+                </button>
+            </div>
 
             <table class="productos-table">
 
@@ -128,6 +177,7 @@
                         <th>Imagen</th>
                         <th>Nombre</th>
                         <th>Precio</th>
+                        <th>Promo</th>
                         <th>Categoría</th>
                         <th>Stock</th>
                         <th>Acciones</th>
@@ -140,7 +190,8 @@
 
                     {% for p in productos %}
 
-                    <tr>
+                    <tr class="fila-producto-admin"
+                        data-tipo="{% if p.es_combo %}combo{% elif p.en_promocion %}promocion{% else %}producto{% endif %}">
 
                         <td>
 
@@ -151,6 +202,14 @@
                         <td>{{ p.nombre }}</td>
 
                         <td>₡{{ p.precio }}</td>
+
+                        <td>
+                            {% if p.en_promocion and p.precio_promocional %}
+                                ₡{{ p.precio_promocional }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
 
                         <td>{{ p.categoria }}</td>
 
@@ -163,17 +222,27 @@
                                 onclick="abrirModal(
                                     '{{ p.id }}',
                                     '{{ p.nombre|escapejs }}',
-                                    '{{ p.precio }}',
+                                    '{{ p.precio|stringformat:"f" }}',
                                     '{{ p.descripcion|escapejs }}',
                                     '{{ p.categoria }}',
                                     '{{ p.stock }}',
                                     '{{ p.imagen.url }}',
-                                    '{{ p.tallas|escapejs }}'
+                                    '{{ p.en_promocion|yesno:"true,false" }}',
+                                    '{% if p.precio_promocional %}{{ p.precio_promocional|stringformat:"f" }}{% endif %}',
+                                    '{{ p.es_combo|yesno:"true,false" }}',
+                                    '{{ p.opciones_bebida|escapejs }}',
+                                    '{{ p.etiqueta_destacado|escapejs }}',
+                                    '{{ p.destacado_desde|date:"Y-m-d\TH:i" }}',
+                                    '{{ p.destacado_hasta|date:"Y-m-d\TH:i" }}'
                                 )">
                                     ✏️ Editar
                                 </button>
-                                <a href="{% url 'eliminar_producto' p.id %}" class="btn-delete"
-                                    onclick="return confirm('¿Eliminar este producto?')">
+                                <a href="{% url 'eliminar_producto' p.id %}"
+                                    class="btn-delete"
+                                    data-swal-confirm
+                                    data-swal-title="¿Eliminar este producto?"
+                                    data-swal-text="Esta acción no se puede deshacer."
+                                    data-swal-button="Sí, eliminar">
                                     🗑️ Eliminar
                                 </a>
 
@@ -187,7 +256,7 @@
 
                     <tr>
 
-                        <td colspan="6">
+                        <td colspan="7">
 
                             No hay productos registrados.
 
@@ -233,21 +302,56 @@
 
                 <input type="number" id="editPrecio" name="precio" placeholder="Precio">
 
+                <input type="number" id="editPrecioPromocional"
+                    class="edit-promo-field"
+                    name="precio_promocional"
+                    placeholder="Precio promocional (opcional)"
+                    min="0" step="0.01">
+
+                <select id="editTipoPublicacion" name="tipo_publicacion"
+                    onchange="actualizarConstructor('editar')">
+                    <option value="producto">Producto normal</option>
+                    <option value="combo">Combo especial</option>
+                    <option value="promocion">Promoción</option>
+                </select>
+
+                <input type="text" id="editEtiquetaDestacado"
+                    name="etiqueta_destacado"
+                    placeholder="Texto de la etiqueta" maxlength="40">
+
+                <input type="datetime-local" id="editDestacadoDesde"
+                    name="destacado_desde">
+
+                <input type="datetime-local" id="editDestacadoHasta"
+                    name="destacado_hasta">
+
+                <div class="option-builder edit-combo-field"
+                    data-hidden-input="editOpcionesBebida">
+                    <label>Opciones de bebida o acompañamiento</label>
+                    <div class="option-entry">
+                        <input type="text" class="option-input"
+                            placeholder="Ej: Café con leche">
+                        <button type="button" onclick="agregarOpcion(this)">
+                            + Agregar opción
+                        </button>
+                    </div>
+                    <div class="option-chips"></div>
+                    <input type="hidden" id="editOpcionesBebida"
+                        name="opciones_bebida">
+                </div>
+
                 <textarea id="editDescripcion" name="descripcion" placeholder="Descripción">
     </textarea>
 
                 <select id="editCategoria" name="categoria">
 
-                    <option value="combos">Combos</option>
-                    <option value="panes">Panes</option>
-                    <option value="dulce">Dulce</option>
-                    <option value="salada">Salada</option>
+                    <option value="dulce">Dulces</option>
+                    <option value="salado">Salados</option>
 
                 </select>
 
                 <input type="number" id="editStock" name="stock" placeholder="Stock">
 
-                <input type="text" id="editTallas" name="tallas" placeholder="Tallas">
                     <!-- Vista previa de la imagen actual -->
                     <img id="previewImagen"
                         src=""
@@ -325,6 +429,7 @@
                     <th>Teléfono</th>
                     <th>Total</th>
                     <th>Método</th>
+                    <th>Pago</th>
                     <th>Estado</th>
                     <th>Fecha</th>
                     <th>Acciones</th>
@@ -356,6 +461,28 @@
                     <td>₡{{ pedido.total }}</td>
 
                     <td>{{ pedido.metodo_pago }}</td>
+
+                    <td>
+                        <span id="estado-pago-{{ pedido.id }}"
+                            class="estado-pago
+                            {% if pedido.estado_pago == 'Pagado' %}pago-completado{% elif pedido.estado_pago == 'Pendiente de pago' %}pago-pendiente{% else %}pago-comprobante{% endif %}">
+                            {{ pedido.estado_pago }}
+                        </span>
+                        {% if pedido.estado_pago != "Pagado" %}
+                        <form method="POST"
+                            action="{% url 'actualizar_pago_pedido' pedido.id %}"
+                            class="form-marcar-pago"
+                            data-swal-confirm
+                            data-swal-title="¿Confirmar el pago?"
+                            data-swal-text="El pedido se marcará como pagado."
+                            data-swal-button="Sí, marcar pagado">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-marcar-pago">
+                                ✓ Marcar pagado
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
 
                     <td>
 
@@ -424,7 +551,7 @@
                     class="detalle-pedido"
                     data-pedido="{{ pedido.id }}"
                     style="display:none;">
-                    <td colspan="9">
+                    <td colspan="10">
                         <div class="detalle-grid">
                             <div>
                                 <strong>Dirección</strong>
@@ -440,7 +567,11 @@
                                     {% for detalle in pedido.detallepedido_set.all %}
                                     <li>
                                         {{ detalle.cantidad }} ×
-                                        {{ detalle.producto.nombre }} —
+                                        {{ detalle.producto.nombre }}
+                                        {% if detalle.opcion %}
+                                            ({{ detalle.opcion }})
+                                        {% endif %}
+                                        —
                                         ₡{{ detalle.precio }}
                                     </li>
                                     {% endfor %}
@@ -465,7 +596,7 @@
 
                 <tr>
 
-                    <td colspan="9">
+                    <td colspan="10">
 
                         No hay pedidos registrados.
 
@@ -487,6 +618,7 @@
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{% static 'js/admin.js' %}"></script>
 </body>
 

@@ -20,14 +20,46 @@ setInterval(cambiarSlide, 4000);
 
 let carrito = [];
 
+const formatoColones = new Intl.NumberFormat("es-CR", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+});
+
+function normalizarPrecio(valor) {
+    if (typeof valor === "number") {
+        return Number.isFinite(valor) ? valor : 0;
+    }
+
+    let texto = String(valor ?? "").trim().replace(/[₡\s]/g, "");
+    if (texto.includes(",") && texto.includes(".")) {
+        texto = texto.lastIndexOf(",") > texto.lastIndexOf(".")
+            ? texto.replace(/\./g, "").replace(",", ".")
+            : texto.replace(/,/g, "");
+    } else if (texto.includes(",")) {
+        texto = texto.replace(",", ".");
+    }
+
+    const precio = Number(texto);
+    return Number.isFinite(precio) ? precio : 0;
+}
+
+function mostrarPrecio(valor) {
+    return formatoColones.format(normalizarPrecio(valor));
+}
+
 /* =========================
 CARRITO
 ========================= */
 
 function agregarCarrito(producto){
+    producto.p = normalizarPrecio(producto.p);
+    producto.opcion = producto.opcion || "";
 
     const existente = carrito.find(
-        item => item.id === producto.id
+        item => (
+            item.id === producto.id
+            && item.opcion === producto.opcion
+        )
     );
 
     if(existente){
@@ -44,6 +76,45 @@ function agregarCarrito(producto){
     }
 
     actualizarCarrito();
+}
+
+function agregarDestacado(producto, selectId) {
+    const selector = document.getElementById(selectId);
+    producto.opcion = selector ? selector.value : "";
+    agregarCarrito(producto);
+    mostrarToast("Producto agregado al carrito");
+}
+
+function filtrarMenu(filtro, boton) {
+    let visibles = 0;
+
+    document.querySelectorAll(".menu-card").forEach(card => {
+        let mostrar = filtro === "todos";
+
+        if (filtro === "combo") {
+            mostrar = card.dataset.combo === "true";
+        } else if (filtro === "promocion") {
+            mostrar = card.dataset.promocion === "true";
+        } else if (filtro.startsWith("categoria:")) {
+            const categoria = filtro.slice("categoria:".length)
+                .trim()
+                .toLocaleLowerCase("es");
+            mostrar = card.dataset.categoria === categoria;
+        }
+
+        card.style.display = mostrar ? "" : "none";
+        if (mostrar) visibles++;
+    });
+
+    document.querySelectorAll(".filter").forEach(item => {
+        item.classList.remove("active");
+    });
+    boton.classList.add("active");
+
+    const vacio = document.getElementById("emptyFilter");
+    if (vacio) {
+        vacio.style.display = visibles === 0 ? "block" : "none";
+    }
 }
 
 /* AGREGAR */
@@ -73,7 +144,7 @@ function actualizarCarrito() {
 
     carrito.forEach((p, index) => {
 
-        const subtotal = p.p * p.cantidad;
+        const subtotal = normalizarPrecio(p.p) * p.cantidad;
 
         totalPrecio += subtotal;
         totalCantidad += p.cantidad;
@@ -88,7 +159,9 @@ function actualizarCarrito() {
 
                 <h4>${p.n}</h4>
 
-                <p>₡${p.p}</p>
+                ${p.opcion ? `<small>${p.opcion}</small>` : ""}
+
+                <p>₡${mostrarPrecio(p.p)}</p>
 
                 <div class="cart-controls">
 
@@ -107,7 +180,7 @@ function actualizarCarrito() {
                 </div>
 
                 <div class="cart-price">
-                    ₡${subtotal.toLocaleString()}
+                    ₡${mostrarPrecio(subtotal)}
                 </div>
 
             </div>
@@ -118,7 +191,7 @@ function actualizarCarrito() {
     });
 
     total.innerText =
-        `Total: ₡${totalPrecio.toLocaleString()}`;
+        `Total: ₡${mostrarPrecio(totalPrecio)}`;
 
     count.innerText = totalCantidad;
 }
@@ -168,7 +241,7 @@ function mostrarFormulario() {
 
     if (carrito.length === 0) {
 
-        alert("Tu carrito está vacío");
+        mostrarToast("Tu carrito está vacío", "error");
         return;
     }
 
@@ -182,16 +255,18 @@ function mostrarFormulario() {
     carrito.forEach(item => {
 
         const subtotal =
-            item.p * item.cantidad;
+            normalizarPrecio(item.p) * item.cantidad;
 
         total += subtotal;
 
         resumen +=
-            `${item.cantidad}x ${item.n} - ₡${subtotal}\n`;
+            `${item.cantidad}x ${item.n}${item.opcion
+                ? ` (${item.opcion})`
+                : ""} - ₡${mostrarPrecio(subtotal)}\n`;
 
     });
 
-    resumen += `\nTotal: ₡${total}`;
+    resumen += `\nTotal: ₡${mostrarPrecio(total)}`;
 
     document
         .getElementById("productosPedido")
@@ -216,12 +291,6 @@ document
 
 e.preventDefault();
 
-let totalPedido = 0;
-
-carrito.forEach(item => {
-    totalPedido += Number(item.p) * item.cantidad;
-});
-
 const formData = new FormData();
 formData.append("nombre", document.getElementById("nombre").value);
 formData.append("telefono", document.getElementById("telefono").value);
@@ -231,7 +300,8 @@ formData.append("comentarios", document.getElementById("comentarios").value);
 formData.append("productos", JSON.stringify(
     carrito.map(item => ({
         id: item.id,
-        cantidad: item.cantidad
+        cantidad: item.cantidad,
+        opcion: item.opcion || ""
     }))
 ));
 
@@ -265,7 +335,7 @@ Pedido: #${data.pedido_id}
 Nombre: ${document.getElementById("nombre").value}
 Tel: ${document.getElementById("telefono").value}
 Dirección: ${document.getElementById("direccion").value}
-Total: ₡${totalPedido}
+Total: ₡${mostrarPrecio(data.total)}
 `;
 
 const numero = "50686725494";
@@ -324,24 +394,6 @@ function verificarMetodoPago(){
         metodoPago.value === "Sinpe" ? "block" : "none";
 }
 
-metodoPago.addEventListener("change", function(){
-
-    console.log(this.value);
-
-    if(this.value === "Sinpe"){
-
-        uploadBox.style.display = "block";
-
-    }else{
-
-        uploadBox.style.display = "none";
-
-    }
-
-});
-
-/* CAMBIO SELECT */
-
 metodoPago.addEventListener(
     "change",
     verificarMetodoPago
@@ -360,35 +412,6 @@ TOAST
 
 
 function mostrarToast(texto, tipo="success"){
-
-    const toast = document.createElement("div");
-
-    toast.className = `toast ${tipo}`;
-
-    toast.innerText = texto;
-
-    document.body.appendChild(toast);
-
-    setTimeout(()=>{
-
-        toast.classList.add("show");
-
-    },100);
-
-    setTimeout(()=>{
-
-        toast.classList.remove("show");
-
-        setTimeout(()=>{
-
-            toast.remove();
-
-        },300);
-
-    },3000);
-
-}
-function alert(texto, tipo="error"){
 
     const toast = document.createElement("div");
 

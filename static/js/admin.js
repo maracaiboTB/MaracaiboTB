@@ -2,6 +2,36 @@
 MODAL EDITAR
 ========================== */
 
+function mostrarAlerta(titulo, texto, icono="error"){
+    return Swal.fire({
+        title: titulo,
+        text: texto,
+        icon: icono,
+        confirmButtonText: "Aceptar",
+        confirmButtonColor: "#ff8c42"
+    });
+}
+
+async function confirmarAccion(
+    titulo,
+    texto,
+    textoConfirmar="Sí, continuar"
+){
+    const resultado = await Swal.fire({
+        title: titulo,
+        text: texto,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: textoConfirmar,
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#e56f1c",
+        cancelButtonColor: "#6f5b4f",
+        reverseButtons: true,
+        focusCancel: true
+    });
+    return resultado.isConfirmed;
+}
+
 function abrirModal(
     id,
     nombre,
@@ -10,7 +40,13 @@ function abrirModal(
     categoria,
     stock,
     imagen,
-    tallas
+    enPromocion,
+    precioPromocional,
+    esCombo,
+    opcionesBebida,
+    etiquetaDestacado,
+    destacadoDesde,
+    destacadoHasta
 ){
 
     const modal =
@@ -24,8 +60,26 @@ function abrirModal(
     document.getElementById("editDescripcion").value = descripcion;
     document.getElementById("editCategoria").value = categoria;
     document.getElementById("editStock").value = stock;
-    document.getElementById("editTallas").value = tallas;
+    document.getElementById("editPrecioPromocional").value =
+        precioPromocional;
+    document.getElementById("editTipoPublicacion").value =
+        esCombo === "true"
+            ? "combo"
+            : (enPromocion === "true" ? "promocion" : "producto");
+    document.getElementById("editOpcionesBebida").value =
+        opcionesBebida;
+    document.getElementById("editEtiquetaDestacado").value =
+        etiquetaDestacado;
+    document.getElementById("editDestacadoDesde").value =
+        destacadoDesde;
+    document.getElementById("editDestacadoHasta").value =
+        destacadoHasta;
     document.getElementById("previewImagen").src = imagen;
+    cargarOpciones(
+        document.querySelector(".edit-combo-field"),
+        opcionesBebida
+    );
+    actualizarConstructor("editar");
 
 }
 
@@ -34,6 +88,104 @@ function cerrarModal(){
     document.getElementById("modalEditar")
     .style.display = "none";
 
+}
+
+function actualizarConstructor(modo){
+    const editar = modo === "editar";
+    const selector = document.getElementById(
+        editar ? "editTipoPublicacion" : "tipoPublicacion"
+    );
+    if (!selector) return;
+
+    const tipo = selector.value;
+    const raiz = editar
+        ? document.getElementById("modalEditar")
+        : document.getElementById("tab-productos");
+
+    raiz.querySelectorAll(
+        editar ? ".edit-promo-field" : ".promo-field"
+    ).forEach(campo => {
+        campo.style.display = tipo === "promocion" ? "" : "none";
+    });
+    raiz.querySelectorAll(
+        editar ? ".edit-combo-field" : ".combo-field"
+    ).forEach(campo => {
+        campo.style.display = tipo === "combo" ? "" : "none";
+    });
+    raiz.querySelectorAll(".destacado-field").forEach(campo => {
+        campo.style.display = tipo === "producto" ? "none" : "";
+    });
+}
+
+function sincronizarOpciones(contenedor){
+    const valores = Array.from(
+        contenedor.querySelectorAll(".option-chip")
+    ).map(chip => chip.dataset.value);
+    document.getElementById(
+        contenedor.dataset.hiddenInput
+    ).value = valores.join(",");
+}
+
+function crearChip(contenedor, valor){
+    const limpio = valor.trim();
+    if (!limpio) return;
+    const existentes = Array.from(
+        contenedor.querySelectorAll(".option-chip")
+    ).map(chip => chip.dataset.value.toLowerCase());
+    if (existentes.includes(limpio.toLowerCase())) return;
+
+    const chip = document.createElement("span");
+    chip.className = "option-chip";
+    chip.dataset.value = limpio;
+    chip.append(document.createTextNode(limpio));
+
+    const quitar = document.createElement("button");
+    quitar.type = "button";
+    quitar.setAttribute("aria-label", `Quitar ${limpio}`);
+    quitar.textContent = "×";
+    quitar.onclick = () => {
+        chip.remove();
+        sincronizarOpciones(contenedor);
+    };
+    chip.appendChild(quitar);
+    contenedor.querySelector(".option-chips").appendChild(chip);
+}
+
+function agregarOpcion(boton){
+    const contenedor = boton.closest(".option-builder");
+    const entrada = contenedor.querySelector(".option-input");
+    crearChip(contenedor, entrada.value);
+    entrada.value = "";
+    entrada.focus();
+    sincronizarOpciones(contenedor);
+}
+
+function cargarOpciones(contenedor, valores){
+    if (!contenedor) return;
+    contenedor.querySelector(".option-chips").innerHTML = "";
+    String(valores || "").split(",").forEach(valor => {
+        crearChip(contenedor, valor);
+    });
+    sincronizarOpciones(contenedor);
+}
+
+function filtrarTipoProducto(tipo, boton){
+    document.querySelectorAll(".fila-producto-admin").forEach(fila => {
+        fila.style.display =
+            tipo === "todos" || fila.dataset.tipo === tipo
+                ? "table-row"
+                : "none";
+    });
+    document.querySelectorAll(".filtro-tipo").forEach(item => {
+        item.classList.remove("active");
+    });
+    if (boton) {
+        boton.classList.add("active");
+    } else {
+        document.querySelector(
+            '.filtro-tipo[onclick*="todos"]'
+        )?.classList.add("active");
+    }
 }
 
 /* ==========================
@@ -69,6 +221,36 @@ if(formEditar){
             );
 
             formData.append(
+                "precio_promocional",
+                document.getElementById("editPrecioPromocional").value
+            );
+
+            formData.append(
+                "tipo_publicacion",
+                document.getElementById("editTipoPublicacion").value
+            );
+
+            formData.append(
+                "opciones_bebida",
+                document.getElementById("editOpcionesBebida").value
+            );
+
+            formData.append(
+                "etiqueta_destacado",
+                document.getElementById("editEtiquetaDestacado").value
+            );
+
+            formData.append(
+                "destacado_desde",
+                document.getElementById("editDestacadoDesde").value
+            );
+
+            formData.append(
+                "destacado_hasta",
+                document.getElementById("editDestacadoHasta").value
+            );
+
+            formData.append(
                 "descripcion",
                 document.getElementById("editDescripcion").value
             );
@@ -81,11 +263,6 @@ if(formEditar){
             formData.append(
                 "stock",
                 document.getElementById("editStock").value
-            );
-
-            formData.append(
-                "tallas",
-                document.getElementById("editTallas").value
             );
 
             const imagen =
@@ -117,12 +294,14 @@ if(formEditar){
                 }
             )
             .then(response => response.json())
-            .then(data => {
+            .then(async data => {
 
                 if(data.success){
 
-                    alert(
-                        "Producto actualizado correctamente"
+                    await mostrarAlerta(
+                        "Producto actualizado",
+                        "Los cambios se guardaron correctamente.",
+                        "success"
                     );
 
                     cerrarModal();
@@ -131,8 +310,9 @@ if(formEditar){
 
                 }else{
 
-                    alert(
-                        data.error || "No se pudo actualizar"
+                    mostrarAlerta(
+                        "No se pudo actualizar",
+                        data.error || "Revisá los datos del producto."
                     );
 
                 }
@@ -142,8 +322,9 @@ if(formEditar){
 
                 console.error(error);
 
-                alert(
-                    "Error al actualizar"
+                mostrarAlerta(
+                    "Error al actualizar",
+                    error.message || "Intentá nuevamente."
                 );
 
             });
@@ -154,7 +335,7 @@ if(formEditar){
 }
 
 
-function mostrarTab(tab){
+function mostrarTab(tab, boton){
 
     document.getElementById("tab-productos").style.display = "none";
 
@@ -163,14 +344,17 @@ function mostrarTab(tab){
         pedidos.style.display = "none";
     }
 
-    const config = document.getElementById("tab-config");
-    if(config){
-        config.style.display = "none";
-    }
-
     document.getElementById(
         "tab-" + tab
     ).style.display = "block";
+
+    document.querySelectorAll(".tab-btn").forEach(item => {
+        item.classList.remove("active");
+    });
+    const tabActivo = boton || document.querySelector(
+        `.tab-btn[data-tab="${tab}"]`
+    );
+    tabActivo?.classList.add("active");
 
     if (tab === "pedidos"){
         const filtroActivo = document.querySelector(
@@ -220,11 +404,13 @@ function filtrarPedidos(filtro, boton){
 }
 
 async function actualizarEstadoPedido(id, estado, enviarWhatsapp){
-    if (
-        estado === "Cancelado" &&
-        !confirm("¿Seguro que deseas cancelar este pedido?")
-    ){
-        return;
+    if (estado === "Cancelado"){
+        const confirmado = await confirmarAccion(
+            "¿Cancelar este pedido?",
+            "El pedido quedará registrado como cancelado.",
+            "Sí, cancelar pedido"
+        );
+        if (!confirmado) return;
     }
 
     const ventanaWhatsapp = enviarWhatsapp
@@ -277,6 +463,45 @@ async function actualizarEstadoPedido(id, estado, enviarWhatsapp){
         if (ventanaWhatsapp){
             ventanaWhatsapp.close();
         }
-        alert(error.message);
+        mostrarAlerta(
+            "No se pudo actualizar el pedido",
+            error.message
+        );
     }
+}
+
+document.querySelectorAll("[data-swal-confirm]").forEach(elemento => {
+    const evento = elemento.tagName === "FORM" ? "submit" : "click";
+    elemento.addEventListener(evento, async event => {
+        event.preventDefault();
+        const confirmado = await confirmarAccion(
+            elemento.dataset.swalTitle,
+            elemento.dataset.swalText,
+            elemento.dataset.swalButton
+        );
+        if (!confirmado) return;
+
+        if (elemento.tagName === "FORM"){
+            elemento.submit();
+        } else {
+            window.location.href = elemento.href;
+        }
+    });
+});
+
+document.querySelectorAll(".option-input").forEach(entrada => {
+    entrada.addEventListener("keydown", event => {
+        if (event.key === "Enter"){
+            event.preventDefault();
+            agregarOpcion(
+                entrada.closest(".option-entry").querySelector("button")
+            );
+        }
+    });
+});
+
+actualizarConstructor("crear");
+
+if (new URLSearchParams(window.location.search).get("tab") === "pedidos"){
+    mostrarTab("pedidos");
 }

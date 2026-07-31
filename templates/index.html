@@ -32,7 +32,7 @@
 
         </div>
 
-        <a href="#" class="header-btn">
+        <a href="#promociones" class="header-btn">
             Ver promociones
         </a>
 
@@ -97,46 +97,6 @@
 
         </div>
 
-        <!-- FORMULARIO -->
-
-        <div class="checkout-form" id="checkoutForm">
-
-            <h2>
-                Finalizar compra
-            </h2>
-
-            <input type="text" placeholder="Nombre completo">
-
-            <input type="tel" placeholder="Teléfono">
-
-            <input type="text" placeholder="Dirección exacta">
-
-            <select>
-
-                <option>Efectivo</option>
-                <option>Sinpe</option>
-                <option>Tarjeta</option>
-
-            </select>
-
-            <label class="upload-box">
-
-                Subir comprobante SINPE
-
-                <input type="file" hidden>
-
-            </label>
-
-            <textarea placeholder="Comentarios"></textarea>
-
-            <button class="finish-btn">
-                Realizar pedido
-            </button>
-
-        </div>
-
-    </div>
-
     </div>
 
 
@@ -180,101 +140,71 @@
 
     <!-- SLIDER -->
 
-    <section class="slider-section">
+    <section class="slider-section" id="promociones">
 
         <div class="slider">
 
-            <div class="slide active">
-
+            {% for p in destacados %}
+            <div class="slide {% if forloop.first %}active{% endif %}">
                 <div class="slide-text">
-
                     <span class="slide-badge">
-                        🔥 PROMO DEL DÍA
+                        {% if p.etiqueta_destacado %}
+                            {{ p.etiqueta_destacado|upper }}
+                        {% elif p.es_combo %}
+                            ☕ COMBO ESPECIAL
+                        {% else %}
+                            🔥 PROMOCIÓN ESPECIAL
+                        {% endif %}
                     </span>
 
-                    <h2>
-                        Combo Coca Cola + Repostería
-                    </h2>
+                    <h2>{{ p.nombre }}</h2>
+                    <p>{{ p.descripcion }}</p>
 
-                    <p>
-                        Elegí entre pastel de pollo,
-                        palmito o enchilada acompañado
-                        de Coca Cola 355ml.
-                    </p>
-
+                    {% if p.en_promocion and p.precio_promocional %}
+                        <div class="slide-old-price">
+                            Antes: ₡{{ p.precio }}
+                        </div>
+                    {% endif %}
                     <div class="slide-price">
-                        ₡3,200
+                        ₡{{ p.precio_venta }}
                     </div>
 
-                    <button>
+                    {% if p.lista_bebidas %}
+                    <label class="combo-option-label"
+                        for="opcion-combo-{{ p.id }}">
+                        Elegí tu bebida
+                    </label>
+                    <select class="combo-option" id="opcion-combo-{{ p.id }}">
+                        {% for opcion in p.lista_bebidas %}
+                        <option value="{{ opcion }}">{{ opcion }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+
+                    <button type="button"
+                        onclick="agregarDestacado({
+                            id:'{{ p.id }}',
+                            n:'{{ p.nombre|escapejs }}',
+                            p:'{{ p.precio_venta|stringformat:"f" }}',
+                            i:'{{ p.imagen.url|escapejs }}'
+                        }, 'opcion-combo-{{ p.id }}')">
                         Pedir ahora
                     </button>
-
                 </div>
 
-                <img src="static/img/combo-coca-cola.jpg">
-
+                <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
             </div>
-
-            <div class="slide">
-
+            {% empty %}
+            <div class="slide active">
                 <div class="slide-text">
-
-                    <span class="slide-badge">
-                        🥖 ESPECIAL
-                    </span>
-
-                    <h2>
-                        Baguette + Patté
-                    </h2>
-
-                    <p>
-                        Baguette con o sin queso acompañado de patté.
-                    </p>
-
-                    <div class="slide-price">
-                        ₡2,400
-                    </div>
-
-                    <button>
-                        Ordenar
-                    </button>
-
+                    <span class="slide-badge">PRÓXIMAMENTE</span>
+                    <h2>Nuevas promociones</h2>
+                    <p>Muy pronto tendremos ofertas especiales para vos.</p>
                 </div>
-
-                <img src="static/img/baguette-patte.jpg">
-
+                <img src="{% static 'img/combo-coca-cola.jpg' %}"
+                    alt="Próximas promociones">
             </div>
-
-            <div class="slide">
-
-                <div class="slide-text">
-
-                    <span class="slide-badge">
-                        🍰 FAVORITO
-                    </span>
-
-                    <h2>
-                        Queque Seco
-                    </h2>
-
-                    <p>
-                        Especial de mantequilla recién horneado.
-                    </p>
-
-                    <div class="slide-price">
-                        ₡3,850
-                    </div>
-
-                    <button>
-                        Comprar
-                    </button>
-
-                </div>
-
-                <img src="static/img/queque-seco.jpg">
-
-            </div>
+            {% endfor %}
 
         </div>
 
@@ -290,8 +220,33 @@
 
     <div class="filters">
 
-        <button class="filter active">
+        <button type="button" class="filter active"
+            onclick="filtrarMenu('todos', this)">
             Todos
+        </button>
+
+        {% if hay_combos %}
+        <button type="button" class="filter"
+            onclick="filtrarMenu('combo', this)">
+            Combos
+        </button>
+        {% endif %}
+
+        {% if hay_promociones %}
+        <button type="button" class="filter"
+            onclick="filtrarMenu('promocion', this)">
+            Promociones
+        </button>
+        {% endif %}
+
+        <button type="button" class="filter"
+            onclick="filtrarMenu('categoria:dulce', this)">
+            Dulces
+        </button>
+
+        <button type="button" class="filter"
+            onclick="filtrarMenu('categoria:salado', this)">
+            Salados
         </button>
 
     </div>
@@ -300,7 +255,10 @@
 
         {% for p in productos %}
 
-        <div class="card">
+        <div class="card menu-card"
+            data-categoria="{{ p.categoria|lower }}"
+            data-combo="{{ p.es_combo|yesno:'true,false' }}"
+            data-promocion="{{ p.en_promocion|yesno:'true,false' }}">
 
             <div class="tag">
                 {{ p.categoria|upper }}
@@ -315,16 +273,31 @@
                 <p>{{ p.descripcion }}</p>
 
                 <div class="price">
-                    {{ p.precio }}
+                    {% if p.en_promocion and p.precio_promocional %}
+                        <span class="old-price">₡{{ p.precio }}</span>
+                    {% endif %}
+                    ₡{{ p.precio_venta }}
                 </div>
 
+                {% if p.lista_bebidas %}
+                <label class="menu-option-label"
+                    for="opcion-menu-{{ p.id }}">
+                    Elegí tu bebida
+                </label>
+                <select class="menu-option" id="opcion-menu-{{ p.id }}">
+                    {% for opcion in p.lista_bebidas %}
+                    <option value="{{ opcion }}">{{ opcion }}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+
                 <button class="buy-btn"
-                        onclick="agregarCarrito({
+                        onclick="agregarDestacado({
                             id:'{{ p.id }}',
-                            n:'{{ p.nombre }}',
-                            p:'{{ p.precio }}',
-                            i:'{{ p.imagen.url }}'
-                        })">
+                            n:'{{ p.nombre|escapejs }}',
+                            p:'{{ p.precio_venta|stringformat:"f" }}',
+                            i:'{{ p.imagen.url|escapejs }}'
+                        }, 'opcion-menu-{{ p.id }}')">
 
                     Agregar al carrito
 
@@ -338,38 +311,13 @@
 
     </div>
 
+    <div class="empty-filter" id="emptyFilter">
+        No hay productos en esta categoría.
+    </div>
+
 </section>
 
-    <!-- MODAL -->
-
-    <div class="modal" id="modal">
-
-        <div class="modal-box">
-
-            <div class="close" onclick="cerrar()">
-                ×
-            </div>
-
-            <img id="mImg">
-
-            <div class="modal-content">
-
-                <h3 id="mNombre"></h3>
-
-                <p id="mDesc"></p>
-
-                <div class="modal-price" id="mPrecio"></div>
-
-            </div>
-
-        </div>
-
-    </div>
-    <!-- =========================
-FORMULARIO PEDIDOS
-
-PEGAR ARRIBA DEL FOOTER
-========================= -->
+    <!-- FORMULARIO DE PEDIDO -->
     <div class="pedido-modal" id="pedidoModal">
 
         <div class="pedido-box">

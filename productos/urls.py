@@ -46,6 +46,12 @@ urlpatterns = [
     ),
 
     path(
+        "pedido/<int:id>/pago/",
+        views.actualizar_pago_pedido,
+        name="actualizar_pago_pedido"
+    ),
+
+    path(
         'admin-productos/',
         views.admin_productos,
         name='admin_productos'

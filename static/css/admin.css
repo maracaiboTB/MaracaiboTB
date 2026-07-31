@@ -14,57 +14,6 @@ body {
 
 
 /* ==========================
-MODAL
-========================== */
-.modal{
-
-    display:none;
-
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(0,0,0,.55);
-
-    justify-content:center;
-
-    align-items:center;
-
-    z-index:9999;
-
-}
-
-.modal-content{
-
-    width:100%;
-
-    max-width:650px;
-
-    background:white;
-
-    padding:30px;
-
-    border-radius:25px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:15px;
-
-}
-
-.close{
-
-    font-size:30px;
-
-    cursor:pointer;
-
-    align-self:flex-end;
-
-}
-
-/* ==========================
 LOGIN
 ========================== */
 
@@ -277,6 +226,73 @@ FORMULARIO
     grid-column: 1/-1;
 }
 
+.builder-field{
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.builder-field label,
+.option-builder > label{
+font-size:.82rem;
+font-weight:700;
+color:#6f5b4f;
+}
+
+.option-builder{
+padding:18px;
+border:1px solid #f0d9c8;
+border-radius:18px;
+background:#fffaf5;
+}
+
+.option-entry{
+display:flex;
+gap:10px;
+}
+
+.option-entry button{
+border:0;
+border-radius:12px;
+padding:0 18px;
+background:#ff8c42;
+color:white;
+font-weight:700;
+cursor:pointer;
+white-space:nowrap;
+}
+
+.option-chips{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-top:12px;
+}
+
+.option-chip{
+display:inline-flex;
+align-items:center;
+gap:7px;
+padding:7px 10px 7px 13px;
+border-radius:999px;
+background:#ffeadb;
+color:#8c4617;
+font-size:.85rem;
+font-weight:600;
+}
+
+.option-chip button{
+width:22px;
+height:22px;
+border:0;
+border-radius:50%;
+background:white;
+color:#e56f1c;
+cursor:pointer;
+font-size:1rem;
+line-height:1;
+}
+
 .file-input {
     padding: 12px;
 }
@@ -311,22 +327,6 @@ FORMULARIO
 /* ==========================
 BUSCADOR
 ========================== */
-
-.search-box {
-    margin-bottom: 20px;
-}
-
-.search-box input {
-    width: 350px;
-
-    padding: 15px;
-
-    border-radius: 15px;
-
-    border: 1px solid #ddd;
-
-    font-size: 14px;
-}
 
 /* ==========================
 TABLA
@@ -433,6 +433,36 @@ ACCIONES
 
     font-size: 14px;
     font-weight: 600;
+}
+
+.filtros-tipo-producto{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin:18px 0 22px;
+}
+
+.filtro-tipo{
+border:1px solid #ead8ca;
+border-radius:999px;
+padding:10px 16px;
+background:white;
+color:#5f4635;
+font-weight:700;
+cursor:pointer;
+transition:.2s;
+}
+
+.filtro-tipo:hover{
+border-color:#ff8c42;
+color:#e56f1c;
+transform:translateY(-2px);
+}
+
+.filtro-tipo.active{
+border-color:#ff8c42;
+background:linear-gradient(135deg,#ff8c42,#e56f1c);
+color:white;
 }
 
 .admin-error {
@@ -542,10 +572,6 @@ RESPONSIVE
 
     .form-grid {
         grid-template-columns: 1fr;
-    }
-
-    .search-box input {
-        width: 100%;
     }
 
     .productos-table {
@@ -668,4 +694,50 @@ MODAL EDITAR
 #formEditar button:hover{
     transform:translateY(-2px);
     box-shadow:0 10px 25px rgba(255,140,66,.35);
+}
+
+.estado-pago{
+display:inline-flex;
+padding:7px 10px;
+border-radius:999px;
+font-size:.78rem;
+font-weight:700;
+white-space:nowrap;
+}
+
+.pago-pendiente{
+background:#fff1cc;
+color:#8a5a00;
+}
+
+.pago-comprobante{
+background:#dff7e8;
+color:#176b3a;
+}
+
+.pago-completado{
+background:#dff7e8;
+color:#176b3a;
+}
+
+.btn-marcar-pago{
+display:block;
+margin-top:7px;
+padding:7px 10px;
+border:0;
+border-radius:9px;
+background:#2e9f5b;
+color:white;
+font-size:.75rem;
+font-weight:700;
+cursor:pointer;
+white-space:nowrap;
+}
+
+.form-marcar-pago{
+margin:0;
+}
+
+.btn-marcar-pago:hover{
+background:#217a44;
 }
