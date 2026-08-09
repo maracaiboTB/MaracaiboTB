@@ -344,9 +344,14 @@ function mostrarTab(tab, boton){
         pedidos.style.display = "none";
     }
 
-    document.getElementById(
-        "tab-" + tab
-    ).style.display = "block";
+    const usuarios = document.getElementById("tab-usuarios");
+    if(usuarios){
+        usuarios.style.display = "none";
+    }
+
+    const panel = document.getElementById("tab-" + tab);
+    if (!panel) return;
+    panel.style.display = "block";
 
     document.querySelectorAll(".tab-btn").forEach(item => {
         item.classList.remove("active");
@@ -365,6 +370,34 @@ function mostrarTab(tab, boton){
             filtroActivo
         );
     }
+}
+
+function abrirModalUsuario(
+    id,
+    username,
+    nombre,
+    apellido,
+    email,
+    rol,
+    activo
+){
+    const modal = document.getElementById("modalUsuario");
+    const formulario = document.getElementById("formEditarUsuario");
+    if (!modal || !formulario) return;
+
+    formulario.action = `/usuarios/${id}/editar/`;
+    document.getElementById("usuarioUsername").value = username;
+    document.getElementById("usuarioNombre").value = nombre;
+    document.getElementById("usuarioApellido").value = apellido;
+    document.getElementById("usuarioEmail").value = email;
+    document.getElementById("usuarioRol").value = rol;
+    document.getElementById("usuarioActivo").checked = activo;
+    modal.style.display = "flex";
+}
+
+function cerrarModalUsuario(){
+    const modal = document.getElementById("modalUsuario");
+    if (modal) modal.style.display = "none";
 }
 
 function verPedido(id){
@@ -502,6 +535,7 @@ document.querySelectorAll(".option-input").forEach(entrada => {
 
 actualizarConstructor("crear");
 
-if (new URLSearchParams(window.location.search).get("tab") === "pedidos"){
-    mostrarTab("pedidos");
+const tabSolicitado = new URLSearchParams(window.location.search).get("tab");
+if (["pedidos", "usuarios"].includes(tabSolicitado)){
+    mostrarTab(tabSolicitado);
 }

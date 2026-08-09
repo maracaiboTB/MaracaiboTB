@@ -39,6 +39,14 @@
             Pedidos
         </button>
 
+        {% if request.user.is_superuser %}
+        <button class="tab-btn" data-tab="usuarios"
+            onclick="mostrarTab('usuarios', this)">
+            <span>👥</span>
+            Usuarios
+        </button>
+        {% endif %}
+
     </div>
     <header>
 
@@ -51,6 +59,15 @@
 
 
     </header>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="admin-message admin-message-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
     <div id="tab-productos">
 
         {% if error_producto %}
@@ -613,6 +630,138 @@
     </div>
 
 </div>
+
+{% if request.user.is_superuser %}
+<div id="tab-usuarios" style="display:none;">
+    <div class="admin-form">
+        <h2>Agregar usuario</h2>
+        <p class="form-help">
+            Los empleados y operarios pueden gestionar productos y pedidos,
+            pero no pueden ver ni administrar usuarios.
+        </p>
+
+        <form method="POST" action="{% url 'crear_usuario' %}">
+            {% csrf_token %}
+            <div class="form-grid user-form-grid">
+                <input type="text" name="username"
+                    placeholder="Nombre de usuario" required autocomplete="off">
+                <input type="text" name="first_name"
+                    placeholder="Nombre">
+                <input type="text" name="last_name"
+                    placeholder="Apellidos">
+                <input type="email" name="email"
+                    placeholder="Correo electrónico">
+                <input type="password" name="password"
+                    placeholder="Contraseña" required autocomplete="new-password">
+                <select name="rol" required>
+                    <option value="empleado">Empleado</option>
+                    <option value="operario">Operario</option>
+                    <option value="administrador">Administrador</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-save">Crear usuario</button>
+        </form>
+    </div>
+
+    <div class="admin-products">
+        <h2>Usuarios registrados</h2>
+        <table class="productos-table usuarios-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>
+                        <strong>{{ usuario.username }}</strong>
+                        {% if usuario == request.user %}<small>(vos)</small>{% endif %}
+                    </td>
+                    <td>{{ usuario.get_full_name|default:"—" }}</td>
+                    <td>{{ usuario.email|default:"—" }}</td>
+                    <td><span class="rol-badge">{{ usuario.rol_panel }}</span></td>
+                    <td>
+                        <span class="estado-usuario {% if usuario.is_active %}activo{% else %}inactivo{% endif %}">
+                            {% if usuario.is_active %}Activo{% else %}Inactivo{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="acciones">
+                            <button type="button" class="btn-edit"
+                                onclick="abrirModalUsuario(
+                                    '{{ usuario.id }}',
+                                    '{{ usuario.username|escapejs }}',
+                                    '{{ usuario.first_name|escapejs }}',
+                                    '{{ usuario.last_name|escapejs }}',
+                                    '{{ usuario.email|escapejs }}',
+                                    '{{ usuario.rol_panel|lower }}',
+                                    {{ usuario.is_active|yesno:'true,false' }}
+                                )">
+                                Editar
+                            </button>
+                            {% if usuario != request.user %}
+                            <form method="POST"
+                                action="{% url 'eliminar_usuario' usuario.id %}"
+                                data-swal-confirm
+                                data-swal-title="¿Eliminar este usuario?"
+                                data-swal-text="La cuenta perderá el acceso al panel."
+                                data-swal-button="Sí, eliminar">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-delete">
+                                    Eliminar
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6">No hay usuarios registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="modalUsuario" class="modal">
+    <div class="modal-content modal-usuario-content">
+        <span class="close" onclick="cerrarModalUsuario()">×</span>
+        <h2>Editar usuario</h2>
+        <form id="formEditarUsuario" method="POST">
+            {% csrf_token %}
+            <div class="form-grid user-form-grid">
+                <input id="usuarioUsername" type="text" name="username"
+                    placeholder="Nombre de usuario" required>
+                <input id="usuarioNombre" type="text" name="first_name"
+                    placeholder="Nombre">
+                <input id="usuarioApellido" type="text" name="last_name"
+                    placeholder="Apellidos">
+                <input id="usuarioEmail" type="email" name="email"
+                    placeholder="Correo electrónico">
+                <input type="password" name="password"
+                    placeholder="Nueva contraseña (opcional)"
+                    autocomplete="new-password">
+                <select id="usuarioRol" name="rol" required>
+                    <option value="empleado">Empleado</option>
+                    <option value="operario">Operario</option>
+                    <option value="administrador">Administrador</option>
+                </select>
+                <label class="usuario-activo full">
+                    <input id="usuarioActivo" type="checkbox" name="is_active">
+                    Usuario activo
+                </label>
+            </div>
+            <button type="submit" class="btn-save">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+{% endif %}
 
     <!-- CONFIG -->
 

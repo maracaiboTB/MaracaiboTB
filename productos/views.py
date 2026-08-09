@@ -1,10 +1,12 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from pedidos.models import Pedido, DetallePedido
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.models import Group
+from django.contrib import messages
 from .models import Producto
 from django.contrib.auth.decorators import login_required
 
-from django.http import JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
@@ -13,9 +15,53 @@ from django.urls import reverse
 import json
 import logging
 from decimal import Decimal, InvalidOperation
+from functools import wraps
 
 
 logger = logging.getLogger(__name__)
+User = get_user_model()
+
+
+def solo_superusuario(vista):
+    @wraps(vista)
+    @login_required
+    def protegida(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden(
+                "No tenés permiso para administrar usuarios."
+            )
+        return vista(request, *args, **kwargs)
+    return protegida
+
+
+def asignar_rol(usuario, rol):
+    if rol not in {"administrador", "empleado", "operario"}:
+        raise ValueError("El rol seleccionado no es válido")
+
+    usuario.is_staff = True
+    usuario.is_superuser = rol == "administrador"
+    usuario.save(update_fields=["is_staff", "is_superuser"])
+    usuario.groups.clear()
+
+    if rol != "administrador":
+        grupo, _ = Group.objects.get_or_create(
+            name="Operario" if rol == "operario" else "Empleado"
+        )
+        usuario.groups.add(grupo)
+
+
+def obtener_usuarios_panel():
+    usuarios = User.objects.prefetch_related("groups").order_by("username")
+    for usuario in usuarios:
+        nombres_grupos = {grupo.name for grupo in usuario.groups.all()}
+        usuario.rol_panel = (
+            "Administrador"
+            if usuario.is_superuser
+            else "Operario"
+            if "Operario" in nombres_grupos
+            else "Empleado"
+        )
+    return usuarios
 
 
 def convertir_precio(valor, nombre, obligatorio=True):
@@ -223,6 +269,10 @@ def admin_productos(request):
                 {
                     'productos': productos,
                     'pedidos': pedidos,
+                    'usuarios': (
+                        obtener_usuarios_panel()
+                        if request.user.is_superuser else []
+                    ),
                     'error_producto': (
                         f"No se pudo guardar la imagen: {error}"
                     )
@@ -242,9 +292,103 @@ def admin_productos(request):
         'admin.html',
         {
             'productos': productos,
-            'pedidos': pedidos
+            'pedidos': pedidos,
+            'usuarios': (
+                obtener_usuarios_panel()
+                if request.user.is_superuser else []
+            )
         }
     )
+
+
+@solo_superusuario
+def crear_usuario(request):
+    if request.method != "POST":
+        return redirect("admin_productos")
+
+    username = request.POST.get("username", "").strip()
+    email = request.POST.get("email", "").strip()
+    nombre = request.POST.get("first_name", "").strip()
+    apellido = request.POST.get("last_name", "").strip()
+    password = request.POST.get("password", "")
+    rol = request.POST.get("rol", "empleado")
+
+    if rol not in {"administrador", "empleado", "operario"}:
+        messages.error(request, "El rol seleccionado no es válido.")
+    elif not username or not password:
+        messages.error(request, "El usuario y la contraseña son obligatorios.")
+    elif User.objects.filter(username__iexact=username).exists():
+        messages.error(request, "Ya existe un usuario con ese nombre.")
+    else:
+        try:
+            usuario = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=nombre,
+                last_name=apellido,
+                is_active=True,
+            )
+            asignar_rol(usuario, rol)
+            messages.success(request, "Usuario creado correctamente.")
+        except ValueError as error:
+            messages.error(request, str(error))
+
+    return redirect(f"{reverse('admin_productos')}?tab=usuarios")
+
+
+@solo_superusuario
+def editar_usuario(request, id):
+    if request.method != "POST":
+        return redirect("admin_productos")
+
+    usuario = get_object_or_404(User, id=id)
+    username = request.POST.get("username", "").strip()
+    rol = request.POST.get("rol", "empleado")
+
+    if rol not in {"administrador", "empleado", "operario"}:
+        messages.error(request, "El rol seleccionado no es válido.")
+    elif not username:
+        messages.error(request, "El nombre de usuario es obligatorio.")
+    elif User.objects.filter(username__iexact=username).exclude(id=id).exists():
+        messages.error(request, "Ya existe otro usuario con ese nombre.")
+    elif usuario == request.user and rol != "administrador":
+        messages.error(request, "No podés quitarte tu propio rol de administrador.")
+    else:
+        try:
+            usuario.username = username
+            usuario.email = request.POST.get("email", "").strip()
+            usuario.first_name = request.POST.get("first_name", "").strip()
+            usuario.last_name = request.POST.get("last_name", "").strip()
+            usuario.is_active = request.POST.get("is_active") == "on"
+            usuario.save()
+
+            password = request.POST.get("password", "")
+            if password:
+                usuario.set_password(password)
+                usuario.save(update_fields=["password"])
+
+            asignar_rol(usuario, rol)
+            messages.success(request, "Usuario actualizado correctamente.")
+        except ValueError as error:
+            messages.error(request, str(error))
+
+    return redirect(f"{reverse('admin_productos')}?tab=usuarios")
+
+
+@solo_superusuario
+def eliminar_usuario(request, id):
+    if request.method != "POST":
+        return JsonResponse({"success": False}, status=405)
+
+    usuario = get_object_or_404(User, id=id)
+    if usuario == request.user:
+        messages.error(request, "No podés eliminar tu propia cuenta.")
+    else:
+        usuario.delete()
+        messages.success(request, "Usuario eliminado correctamente.")
+
+    return redirect(f"{reverse('admin_productos')}?tab=usuarios")
 
 
 
