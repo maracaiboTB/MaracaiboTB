@@ -14,9 +14,14 @@ import os
 from pathlib import Path
 
 import dj_database_url
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load local secrets during development. Hosting providers should continue to
+# provide these values as environment variables.
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -105,15 +110,29 @@ WSGI_APPLICATION = 'maracaibo.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# Use Supabase/PostgreSQL whenever DATABASE_URL is configured. SQLite remains
+# available for local development so the project can still start without
+# external credentials.
+DATABASE_URL = os.environ.get(
+    'DATABASE_URL',
+    f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+)
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        conn_health_checks=True
+    'default': dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=int(os.environ.get('DB_CONN_MAX_AGE', '60')),
+        conn_health_checks=True,
+        ssl_require=DATABASE_URL.startswith(('postgres://', 'postgresql://')),
     )
 }
+
+# Supabase's transaction pooler does not support server-side cursors.
+if DATABASE_URL.startswith(('postgres://', 'postgresql://')):
+    DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
+    # `pgbouncer=true` is metadata included by Supabase in its URI; it is not
+    # a libpq connection option and must not be forwarded to psycopg2.
+    DATABASES['default'].get('OPTIONS', {}).pop('pgbouncer', None)
 
 
 # Password validation

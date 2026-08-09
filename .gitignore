@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.uv-cache/
+.uv-python/
+
+staticfiles/
+datos.json
