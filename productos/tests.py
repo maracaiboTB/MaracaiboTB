@@ -25,9 +25,9 @@ class GestionUsuariosTests(TestCase):
             password="Admin12345!",
             email="admin@example.com",
         )
-        self.empleado = User.objects.create_user(
-            username="empleado",
-            password="Empleado12345!",
+        self.operario = User.objects.create_user(
+            username="operario",
+            password="Operario12345!",
             is_staff=True,
         )
 
@@ -38,15 +38,15 @@ class GestionUsuariosTests(TestCase):
         self.assertContains(response, "Usuarios")
         self.assertContains(response, "Agregar usuario")
 
-    def test_empleado_no_ve_pestana_usuarios(self):
-        self.client.force_login(self.empleado)
+    def test_operario_no_ve_pestana_usuarios(self):
+        self.client.force_login(self.operario)
         response = self.client.get(reverse("admin_productos"))
 
         self.assertNotContains(response, "Agregar usuario")
         self.assertNotContains(response, 'data-tab="usuarios"')
 
-    def test_empleado_no_puede_crear_editar_ni_eliminar(self):
-        self.client.force_login(self.empleado)
+    def test_operario_no_puede_crear_editar_ni_eliminar(self):
+        self.client.force_login(self.operario)
         urls = [
             reverse("crear_usuario"),
             reverse("editar_usuario", args=[self.admin.id]),
@@ -58,7 +58,7 @@ class GestionUsuariosTests(TestCase):
                 response = self.client.post(url, {})
                 self.assertEqual(response.status_code, 403)
 
-    def test_administrador_puede_crear_empleado(self):
+    def test_administrador_puede_crear_operario(self):
         self.client.force_login(self.admin)
         response = self.client.post(
             reverse("crear_usuario"),
@@ -66,7 +66,7 @@ class GestionUsuariosTests(TestCase):
                 "username": "caja",
                 "password": "Caja12345!",
                 "first_name": "Persona",
-                "rol": "empleado",
+                "rol": "operario",
             },
         )
 
@@ -74,7 +74,7 @@ class GestionUsuariosTests(TestCase):
         usuario = User.objects.get(username="caja")
         self.assertTrue(usuario.is_staff)
         self.assertFalse(usuario.is_superuser)
-        self.assertTrue(usuario.groups.filter(name="Empleado").exists())
+        self.assertTrue(usuario.groups.filter(name="Operario").exists())
 
     def test_administrador_no_puede_eliminarse(self):
         self.client.force_login(self.admin)

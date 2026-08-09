@@ -35,7 +35,7 @@ def solo_superusuario(vista):
 
 
 def asignar_rol(usuario, rol):
-    if rol not in {"administrador", "empleado", "operario"}:
+    if rol not in {"administrador", "operario"}:
         raise ValueError("El rol seleccionado no es válido")
 
     usuario.is_staff = True
@@ -44,22 +44,17 @@ def asignar_rol(usuario, rol):
     usuario.groups.clear()
 
     if rol != "administrador":
-        grupo, _ = Group.objects.get_or_create(
-            name="Operario" if rol == "operario" else "Empleado"
-        )
+        grupo, _ = Group.objects.get_or_create(name="Operario")
         usuario.groups.add(grupo)
 
 
 def obtener_usuarios_panel():
     usuarios = User.objects.prefetch_related("groups").order_by("username")
     for usuario in usuarios:
-        nombres_grupos = {grupo.name for grupo in usuario.groups.all()}
         usuario.rol_panel = (
             "Administrador"
             if usuario.is_superuser
             else "Operario"
-            if "Operario" in nombres_grupos
-            else "Empleado"
         )
     return usuarios
 
@@ -311,9 +306,9 @@ def crear_usuario(request):
     nombre = request.POST.get("first_name", "").strip()
     apellido = request.POST.get("last_name", "").strip()
     password = request.POST.get("password", "")
-    rol = request.POST.get("rol", "empleado")
+    rol = request.POST.get("rol", "operario")
 
-    if rol not in {"administrador", "empleado", "operario"}:
+    if rol not in {"administrador", "operario"}:
         messages.error(request, "El rol seleccionado no es válido.")
     elif not username or not password:
         messages.error(request, "El usuario y la contraseña son obligatorios.")
@@ -344,9 +339,9 @@ def editar_usuario(request, id):
 
     usuario = get_object_or_404(User, id=id)
     username = request.POST.get("username", "").strip()
-    rol = request.POST.get("rol", "empleado")
+    rol = request.POST.get("rol", "operario")
 
-    if rol not in {"administrador", "empleado", "operario"}:
+    if rol not in {"administrador", "operario"}:
         messages.error(request, "El rol seleccionado no es válido.")
     elif not username:
         messages.error(request, "El nombre de usuario es obligatorio.")

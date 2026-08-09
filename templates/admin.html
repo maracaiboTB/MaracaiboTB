@@ -636,8 +636,8 @@
     <div class="admin-form">
         <h2>Agregar usuario</h2>
         <p class="form-help">
-            Los empleados y operarios pueden gestionar productos y pedidos,
-            pero no pueden ver ni administrar usuarios.
+            Los operarios pueden gestionar productos y pedidos, pero no
+            pueden ver ni administrar usuarios.
         </p>
 
         <form method="POST" action="{% url 'crear_usuario' %}">
@@ -654,7 +654,6 @@
                 <input type="password" name="password"
                     placeholder="Contraseña" required autocomplete="new-password">
                 <select name="rol" required>
-                    <option value="empleado">Empleado</option>
                     <option value="operario">Operario</option>
                     <option value="administrador">Administrador</option>
                 </select>
@@ -748,7 +747,6 @@
                     placeholder="Nueva contraseña (opcional)"
                     autocomplete="new-password">
                 <select id="usuarioRol" name="rol" required>
-                    <option value="empleado">Empleado</option>
                     <option value="operario">Operario</option>
                     <option value="administrador">Administrador</option>
                 </select>
