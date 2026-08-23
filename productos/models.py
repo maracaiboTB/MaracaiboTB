@@ -88,3 +88,16 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
+class Sugerencia(models.Model):
+    nombre = models.CharField(max_length=100, blank=True)
+    contacto = models.CharField(max_length=100, blank=True)
+    mensaje = models.TextField()
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-fecha"]
+
+    def __str__(self):
+        return self.nombre or f"Sugerencia #{self.pk}"

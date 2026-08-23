@@ -20,6 +20,47 @@ setInterval(cambiarSlide, 4000);
 
 let carrito = [];
 
+const sugerenciasModal = document.getElementById("sugerenciasModal");
+const sugerenciasForm = document.getElementById("sugerenciasForm");
+
+function abrirSugerencias(){
+    sugerenciasModal.style.display = "flex";
+    sugerenciasModal.setAttribute("aria-hidden", "false");
+    sugerenciasForm.querySelector("textarea").focus();
+}
+
+function cerrarSugerencias(){
+    sugerenciasModal.style.display = "none";
+    sugerenciasModal.setAttribute("aria-hidden", "true");
+}
+
+sugerenciasForm.addEventListener("submit", async function(event){
+    event.preventDefault();
+
+    try {
+        const response = await fetch("/sugerencias/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": this.querySelector(
+                    "[name=csrfmiddlewaretoken]"
+                ).value
+            },
+            body: new FormData(this)
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success){
+            throw new Error(data.error || "No se pudo enviar la sugerencia.");
+        }
+
+        this.reset();
+        cerrarSugerencias();
+        mostrarToast("¡Gracias por tu sugerencia!");
+    } catch (error) {
+        mostrarToast(error.message, "error");
+    }
+});
+
 const formatoColones = new Intl.NumberFormat("es-CR", {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2

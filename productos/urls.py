@@ -64,6 +64,12 @@ urlpatterns = [
     ),
 
     path(
+        "sugerencias/",
+        views.crear_sugerencia,
+        name="crear_sugerencia"
+    ),
+
+    path(
         'admin-productos/',
         views.admin_productos,
         name='admin_productos'

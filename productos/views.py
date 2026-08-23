@@ -3,7 +3,7 @@ from pedidos.models import Pedido, DetallePedido
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.models import Group
 from django.contrib import messages
-from .models import Producto
+from .models import Producto, Sugerencia
 from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponseForbidden, JsonResponse
@@ -265,12 +265,14 @@ def admin_productos(request):
             pedidos = Pedido.objects.prefetch_related(
                 "detallepedido_set"
             ).order_by("-fecha")
+            sugerencias = Sugerencia.objects.all()
             return render(
                 request,
                 'admin.html',
                 {
                     'productos': productos,
                     'pedidos': pedidos,
+                    'sugerencias': sugerencias,
                     'usuarios': (
                         obtener_usuarios_panel()
                         if request.user.is_superuser else []
@@ -288,6 +290,7 @@ def admin_productos(request):
     pedidos = Pedido.objects.prefetch_related(
         "detallepedido_set"
     ).order_by("-fecha")
+    sugerencias = Sugerencia.objects.all()
 
     return render(
         request,
@@ -295,6 +298,7 @@ def admin_productos(request):
         {
             'productos': productos,
             'pedidos': pedidos,
+            'sugerencias': sugerencias,
             'usuarios': (
                 obtener_usuarios_panel()
                 if request.user.is_superuser else []
@@ -565,4 +569,23 @@ def eliminar_pedido(request, id):
     pedido = get_object_or_404(Pedido, id=id)
     pedido.delete()
 
+    return JsonResponse({"success": True})
+
+
+def crear_sugerencia(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False}, status=405)
+
+    mensaje = request.POST.get("mensaje", "").strip()
+    if not mensaje:
+        return JsonResponse(
+            {"success": False, "error": "Escribí tu comentario o sugerencia."},
+            status=400
+        )
+
+    Sugerencia.objects.create(
+        nombre=request.POST.get("nombre", "").strip(),
+        contacto=request.POST.get("contacto", "").strip(),
+        mensaje=mensaje,
+    )
     return JsonResponse({"success": True})

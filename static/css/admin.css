@@ -178,14 +178,16 @@ FORMULARIO
 .admin-form {
     background: white;
 
-    padding: 30px;
+    width: min(100%, 1400px);
+
+    padding: clamp(18px, 2.5vw, 30px);
 
     border-radius: 25px;
 
     box-shadow:
         0 10px 30px rgba(0, 0, 0, .08);
 
-    margin-bottom: 30px;
+    margin: 0 auto 30px;
 }
 
 .admin-form h2 {
@@ -195,8 +197,7 @@ FORMULARIO
 .form-grid {
     display: grid;
 
-    grid-template-columns:
-        repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
 
     gap: 15px;
 }
@@ -662,6 +663,15 @@ color:white;
 .detalle-grid p,
 .detalle-grid ul {
     margin: 8px 0 0;
+}
+
+.sugerencias-admin {
+    margin-bottom: 30px;
+}
+
+.mensaje-sugerencia {
+    min-width: 280px;
+    white-space: pre-line;
 }
 
 /* ==========================

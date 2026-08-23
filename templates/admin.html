@@ -39,6 +39,12 @@
             Pedidos
         </button>
 
+        <button class="tab-btn" data-tab="sugerencias"
+            onclick="mostrarTab('sugerencias', this)">
+            <span>💬</span>
+            Comentarios
+        </button>
+
         {% if request.user.is_superuser %}
         <button class="tab-btn" data-tab="usuarios"
             onclick="mostrarTab('usuarios', this)">
@@ -646,6 +652,38 @@
 
     </div>
 
+</div>
+
+<div id="tab-sugerencias" style="display:none;">
+    <div class="admin-products sugerencias-admin">
+        <h2>Comentarios y sugerencias</h2>
+        <p class="form-help">Mensajes enviados desde la página pública.</p>
+
+        <table class="productos-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>Mensaje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sugerencia in sugerencias %}
+                <tr>
+                    <td>{{ sugerencia.fecha|date:"d/m/Y H:i" }}</td>
+                    <td>{{ sugerencia.nombre|default:"Anónimo" }}</td>
+                    <td>{{ sugerencia.contacto|default:"—" }}</td>
+                    <td class="mensaje-sugerencia">{{ sugerencia.mensaje }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Aún no hay comentarios ni sugerencias.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% if request.user.is_superuser %}

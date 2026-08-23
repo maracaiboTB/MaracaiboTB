@@ -415,9 +415,33 @@
 
     <footer>
 
-
-        © 2026 Panadería Maracaibo – Tibás
+        <button type="button" class="feedback-trigger"
+            onclick="abrirSugerencias()">
+            <span aria-hidden="true">💬</span>
+            Comentarios y sugerencias
+        </button>
+        <span>© 2026 Panadería Maracaibo – Tibás</span>
     </footer>
+
+    <div class="sugerencias-modal" id="sugerenciasModal"
+        aria-hidden="true">
+        <div class="sugerencias-box" role="dialog" aria-modal="true"
+            aria-labelledby="sugerenciasTitulo">
+            <button type="button" class="cerrar-sugerencias"
+                onclick="cerrarSugerencias()" aria-label="Cerrar">×</button>
+            <h2 id="sugerenciasTitulo">Comentarios y sugerencias</h2>
+            <p>Tu opinión nos ayuda a mejorar.</p>
+            <form id="sugerenciasForm">
+                {% csrf_token %}
+                <input type="text" name="nombre" placeholder="Nombre (opcional)">
+                <input type="text" name="contacto"
+                    placeholder="Teléfono o correo (opcional)">
+                <textarea name="mensaje" placeholder="Escribí tu comentario o sugerencia"
+                    required></textarea>
+                <button type="submit">Enviar sugerencia</button>
+            </form>
+        </div>
+    </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{% static 'js/script.js' %}"></script>

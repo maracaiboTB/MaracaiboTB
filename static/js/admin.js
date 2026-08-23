@@ -376,18 +376,9 @@ if(formEditar){
 
 
 function mostrarTab(tab, boton){
-
-    document.getElementById("tab-productos").style.display = "none";
-
-    const pedidos = document.getElementById("tab-pedidos");
-    if(pedidos){
-        pedidos.style.display = "none";
-    }
-
-    const usuarios = document.getElementById("tab-usuarios");
-    if(usuarios){
-        usuarios.style.display = "none";
-    }
+    document.querySelectorAll("[id^='tab-']").forEach(panel => {
+        panel.style.display = "none";
+    });
 
     const panel = document.getElementById("tab-" + tab);
     if (!panel) return;
