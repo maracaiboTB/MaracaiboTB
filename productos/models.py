@@ -29,6 +29,10 @@ class Producto(models.Model):
         default=True
     )
 
+    agotado = models.BooleanField(
+        default=False
+    )
+
     en_promocion = models.BooleanField(
         default=False
     )

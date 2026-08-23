@@ -40,6 +40,12 @@ urlpatterns = [
     ),
 
     path(
+        "producto/<int:id>/agotado/",
+        views.cambiar_estado_agotado,
+        name="cambiar_estado_agotado"
+    ),
+
+    path(
         "pedido/<int:id>/estado/",
         views.actualizar_estado_pedido,
         name="actualizar_estado_pedido"
@@ -49,6 +55,12 @@ urlpatterns = [
         "pedido/<int:id>/pago/",
         views.actualizar_pago_pedido,
         name="actualizar_pago_pedido"
+    ),
+
+    path(
+        "pedido/<int:id>/eliminar/",
+        views.eliminar_pedido,
+        name="eliminar_pedido"
     ),
 
     path(

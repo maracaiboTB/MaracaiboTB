@@ -188,6 +188,46 @@ function filtrarTipoProducto(tipo, boton){
     }
 }
 
+async function cambiarEstadoAgotado(id, estaAgotado){
+    const accion = estaAgotado ? "marcar como disponible" : "marcar como agotado";
+    const confirmado = await confirmarAccion(
+        `¿Querés ${accion} este producto?`,
+        estaAgotado
+            ? "El producto volverá a estar disponible en el menú."
+            : "Los clientes lo verán como agotado y no podrán agregarlo al carrito.",
+        "Sí, continuar"
+    );
+
+    if (!confirmado) return;
+
+    try {
+        const response = await fetch(`/producto/${id}/agotado/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector(
+                    "[name=csrfmiddlewaretoken]"
+                ).value
+            }
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "No se pudo actualizar el estado.");
+        }
+
+        await mostrarAlerta(
+            data.agotado ? "Producto agotado" : "Producto disponible",
+            data.agotado
+                ? "El producto ya no se puede pedir desde el menú."
+                : "El producto ya se puede pedir desde el menú.",
+            "success"
+        );
+        location.reload();
+    } catch (error) {
+        mostrarAlerta("No se pudo actualizar", error.message);
+    }
+}
+
 /* ==========================
 GUARDAR CAMBIOS
 ========================== */
@@ -500,6 +540,40 @@ async function actualizarEstadoPedido(id, estado, enviarWhatsapp){
             "No se pudo actualizar el pedido",
             error.message
         );
+    }
+}
+
+async function eliminarPedido(id){
+    const confirmado = await confirmarAccion(
+        "¿Eliminar este pedido?",
+        "Se eliminarán el pedido y sus productos asociados. Esta acción no se puede deshacer.",
+        "Sí, eliminar pedido"
+    );
+    if (!confirmado) return;
+
+    try {
+        const response = await fetch(`/pedido/${id}/eliminar/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector(
+                    "[name=csrfmiddlewaretoken]"
+                ).value
+            }
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success){
+            throw new Error(data.error || "No se pudo eliminar el pedido.");
+        }
+
+        await mostrarAlerta(
+            "Pedido eliminado",
+            "El pedido se eliminó correctamente.",
+            "success"
+        );
+        window.location.reload();
+    } catch (error) {
+        mostrarAlerta("No se pudo eliminar el pedido", error.message);
     }
 }
 

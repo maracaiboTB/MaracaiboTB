@@ -169,6 +169,10 @@
                         ₡{{ p.precio_venta }}
                     </div>
 
+                    {% if p.agotado %}
+                    <span class="agotado-slide">AGOTADO</span>
+                    {% endif %}
+
                     {% if p.lista_bebidas %}
                     <label class="combo-option-label"
                         for="opcion-combo-{{ p.id }}">
@@ -181,14 +185,14 @@
                     </select>
                     {% endif %}
 
-                    <button type="button"
+                    <button type="button" {% if p.agotado %}class="buy-btn agotado-btn" disabled{% endif %}
                         onclick="agregarDestacado({
                             id:'{{ p.id }}',
                             n:'{{ p.nombre|escapejs }}',
                             p:'{{ p.precio_venta|stringformat:"f" }}',
                             i:'{{ p.imagen.url|escapejs }}'
                         }, 'opcion-combo-{{ p.id }}')">
-                        Pedir ahora
+                        {% if p.agotado %}Agotado{% else %}Pedir ahora{% endif %}
                     </button>
                 </div>
 
@@ -264,6 +268,10 @@
                 {{ p.categoria|upper }}
             </div>
 
+            {% if p.agotado %}
+            <div class="agotado-badge">AGOTADO</div>
+            {% endif %}
+
             <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
 
             <div class="card-body">
@@ -291,7 +299,8 @@
                 </select>
                 {% endif %}
 
-                <button class="buy-btn"
+                <button class="buy-btn {% if p.agotado %}agotado-btn{% endif %}"
+                        {% if p.agotado %}disabled{% endif %}
                         onclick="agregarDestacado({
                             id:'{{ p.id }}',
                             n:'{{ p.nombre|escapejs }}',
@@ -299,7 +308,7 @@
                             i:'{{ p.imagen.url|escapejs }}'
                         }, 'opcion-menu-{{ p.id }}')">
 
-                    Agregar al carrito
+                    {% if p.agotado %}Producto agotado{% else %}Agregar al carrito{% endif %}
 
                 </button>
 

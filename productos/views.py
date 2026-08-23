@@ -186,7 +186,12 @@ def crear_pedido(request):
             raise ValueError("Faltan datos obligatorios")
 
         for item in items:
-            producto = get_object_or_404(Producto, id=item["id"], activo=True)
+            producto = get_object_or_404(
+                Producto,
+                id=item["id"],
+                activo=True,
+                agotado=False
+            )
             cantidad = int(item["cantidad"])
             if cantidad < 1:
                 raise ValueError("Cantidad inválida")
@@ -488,6 +493,21 @@ def eliminar_producto(request, id):
 
 
 @login_required
+def cambiar_estado_agotado(request, id):
+    if request.method != "POST":
+        return JsonResponse({"success": False}, status=405)
+
+    producto = get_object_or_404(Producto, id=id)
+    producto.agotado = not producto.agotado
+    producto.save(update_fields=["agotado"])
+
+    return JsonResponse({
+        "success": True,
+        "agotado": producto.agotado,
+    })
+
+
+@login_required
 def actualizar_estado_pedido(request, id):
     if request.method != "POST":
         return JsonResponse({"success": False}, status=405)
@@ -535,3 +555,14 @@ def actualizar_pago_pedido(request, id):
     pedido.save(update_fields=["estado_pago"])
 
     return redirect(f"{reverse('admin_productos')}?tab=pedidos")
+
+
+@login_required
+def eliminar_pedido(request, id):
+    if request.method != "POST":
+        return JsonResponse({"success": False}, status=405)
+
+    pedido = get_object_or_404(Pedido, id=id)
+    pedido.delete()
+
+    return JsonResponse({"success": True})

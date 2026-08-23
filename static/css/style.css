@@ -502,6 +502,32 @@ z-index:9999;
 padding:40px 20px;
 }
 
+.agotado-badge{
+position:absolute;
+top:14px;
+right:14px;
+padding:7px 11px;
+border-radius:999px;
+background:#b42318;
+color:#fff;
+font-size:.72rem;
+font-weight:700;
+letter-spacing:.05em;
+z-index:1;
+}
+
+.agotado-slide{
+display:inline-block;
+margin-top:12px;
+padding:7px 12px;
+border-radius:999px;
+background:#b42318;
+color:#fff;
+font-size:.78rem;
+font-weight:700;
+letter-spacing:.05em;
+}
+
 /* Mantiene las alertas de SweetAlert por encima del modal de pedido. */
 .swal2-container{
 z-index:10000 !important;
@@ -593,6 +619,18 @@ transition:.2s;
 
 .buy-btn:hover{
 transform:translateY(-2px);
+}
+
+.agotado-btn,
+.buy-btn.agotado-btn{
+background:#9a8a7d;
+cursor:not-allowed;
+opacity:.8;
+}
+
+.agotado-btn:hover,
+.buy-btn.agotado-btn:hover{
+transform:none;
 }
 
 /* =========================

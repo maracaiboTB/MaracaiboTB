@@ -197,6 +197,7 @@
                         <th>Promo</th>
                         <th>Categoría</th>
                         <th>Stock</th>
+                        <th>Estado</th>
                         <th>Acciones</th>
 
                     </tr>
@@ -233,6 +234,12 @@
                         <td>{{ p.stock }}</td>
 
                         <td>
+                            <span class="estado-producto {% if p.agotado %}agotado{% else %}disponible{% endif %}">
+                                {% if p.agotado %}Agotado{% else %}Disponible{% endif %}
+                            </span>
+                        </td>
+
+                        <td>
 
                             <div class="acciones">
                             <button type="button" class="btn-edit"
@@ -254,6 +261,11 @@
                                 )">
                                     ✏️ Editar
                                 </button>
+                                <button type="button"
+                                    class="btn-stock {% if p.agotado %}btn-disponible{% endif %}"
+                                    onclick="cambiarEstadoAgotado('{{ p.id }}', {{ p.agotado|yesno:'true,false' }})">
+                                    {% if p.agotado %}Marcar disponible{% else %}Marcar agotado{% endif %}
+                                </button>
                                 <a href="{% url 'eliminar_producto' p.id %}"
                                     class="btn-delete"
                                     data-swal-confirm
@@ -273,7 +285,7 @@
 
                     <tr>
 
-                        <td colspan="7">
+                        <td colspan="8">
 
                             No hay productos registrados.
 
@@ -558,6 +570,11 @@
                                 ✕ Cancelar
                             </button>
                             {% endif %}
+
+                            <button type="button" class="btn-eliminar-pedido"
+                                onclick="eliminarPedido('{{ pedido.id }}')">
+                                🗑️ Eliminar
+                            </button>
                         </div>
 
                     </td>
