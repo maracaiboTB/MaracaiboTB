@@ -306,6 +306,17 @@ formData.append("productos", JSON.stringify(
 ));
 
 const comprobante = document.getElementById("comprobante").files[0];
+if (document.getElementById("metodoPago").value === "Sinpe" && !comprobante) {
+    Swal.fire({
+        icon: "warning",
+        title: "Comprobante requerido",
+        text: "Debes enviar el comprobante de pago SINPE para continuar.",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#e56f1c"
+    });
+    return;
+}
+
 if (comprobante) {
     formData.append("comprobante", comprobante);
 }
@@ -338,7 +349,7 @@ Dirección: ${document.getElementById("direccion").value}
 Total: ₡${mostrarPrecio(data.total)}
 `;
 
-const numero = "50686725494";
+const numero = "50670143326";
 
 const url =
 `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
@@ -388,10 +399,47 @@ const preview =
 document.getElementById("previewComprobante");
 const uploadBox =
 document.getElementById("uploadBox");
+const sinpePaymentInfo =
+document.getElementById("sinpePaymentInfo");
+const copySinpeButton =
+document.getElementById("copySinpeButton");
+const sinpeNumber =
+document.getElementById("sinpeNumber");
+
+async function copiarNumeroSinpe(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const numero = sinpeNumber.dataset.copyNumber || sinpeNumber.textContent.trim();
+
+    try {
+        await navigator.clipboard.writeText(numero);
+    } catch (error) {
+        const areaTemporal = document.createElement("textarea");
+        areaTemporal.value = numero;
+        areaTemporal.setAttribute("readonly", "");
+        areaTemporal.style.position = "fixed";
+        areaTemporal.style.opacity = "0";
+        document.body.appendChild(areaTemporal);
+        areaTemporal.select();
+        document.execCommand("copy");
+        areaTemporal.remove();
+    }
+
+    copySinpeButton.textContent = "¡Copiado!";
+    mostrarToast("Número SINPE copiado");
+
+    setTimeout(() => {
+        copySinpeButton.textContent = "Copiar";
+    }, 2000);
+}
+
+copySinpeButton.addEventListener("click", copiarNumeroSinpe);
 
 function verificarMetodoPago(){
-    uploadBox.style.display =
-        metodoPago.value === "Sinpe" ? "block" : "none";
+    const esSinpe = metodoPago.value === "Sinpe";
+    uploadBox.style.display = esSinpe ? "block" : "none";
+    sinpePaymentInfo.style.display = esSinpe ? "block" : "none";
 }
 
 metodoPago.addEventListener(

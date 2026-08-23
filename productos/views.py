@@ -165,6 +165,8 @@ def crear_pedido(request):
 
         metodo_pago = request.POST.get("metodo_pago", "").strip()
         comprobante = request.FILES.get("comprobante")
+        if metodo_pago == "Sinpe" and not comprobante:
+            raise ValueError("Debés adjuntar el comprobante SINPE")
         estado_pago = (
             "Comprobante enviado"
             if metodo_pago == "Sinpe" and comprobante

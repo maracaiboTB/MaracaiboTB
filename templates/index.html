@@ -16,7 +16,7 @@
 <body>
 
     <div class="top-bar">
-        🥐 Panadería Maracaibo – Tibás · W hatsApp 6389-0600
+        🥐 Panadería Maracaibo – Tibás · W hatsApp 7014-3326
     </div>
 
     <header>
@@ -357,11 +357,25 @@
                
                 </select>
 
-                <!-- SUBIR COMPROBANTE -->
+                <div class="sinpe-payment-info" id="sinpePaymentInfo">
+                    <div class="sinpe-info">
+                        <span class="sinpe-label">NÚMERO DE SINPE</span>
+                        <div class="sinpe-number-row">
+                            <strong id="sinpeNumber" data-copy-number="87855649">8785-5649</strong>
+                            <button type="button" class="copy-sinpe-btn"
+                                id="copySinpeButton" aria-label="Copiar número SINPE">
+                                Copiar
+                            </button>
+                        </div>
+                        <small>A nombre de ALEXANDER FAERRON</small>
+                    </div>
+                </div>
+
+                <!-- SUBIR COMPROBANTE (OPCIONAL) -->
 
                 <label class="upload-box" id="uploadBox">
 
-                    📸 Subir comprobante SINPE
+                    <span class="upload-prompt">📸 Subir comprobante SINPE</span>
 
                     <input type="file" id="comprobante" accept="image/*" hidden>
 
@@ -396,6 +410,7 @@
         © 2026 Panadería Maracaibo – Tibás
     </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{% static 'js/script.js' %}"></script>
 </body>
 

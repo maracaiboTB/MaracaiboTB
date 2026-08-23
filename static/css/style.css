@@ -502,6 +502,11 @@ z-index:9999;
 padding:40px 20px;
 }
 
+/* Mantiene las alertas de SweetAlert por encima del modal de pedido. */
+.swal2-container{
+z-index:10000 !important;
+}
+
 .pedido-box{
 background:#fff;
 width:100%;
@@ -819,6 +824,88 @@ transform:scale(1.1);
     color:#7a4b2a;
 
     background:#fffaf5;
+}
+
+.sinpe-payment-info{
+
+    display:none;
+    margin-top:15px;
+    padding:18px 20px;
+    border:1px solid #f4d7c0;
+    border-radius:20px;
+    text-align:center;
+    background:#fffaf5;
+
+}
+
+.sinpe-info{
+
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    margin-bottom:0;
+
+}
+
+.sinpe-label{
+
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.08em;
+    color:#a45a2a;
+
+}
+
+.sinpe-number-row{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+}
+
+.sinpe-number-row strong{
+
+    font-size:1.2rem;
+    letter-spacing:.06em;
+    color:#2e1b0f;
+
+}
+
+.sinpe-info small{
+
+    font-size:.78rem;
+    font-weight:500;
+
+}
+
+.copy-sinpe-btn{
+
+    border:0;
+    border-radius:10px;
+    padding:7px 11px;
+    background:#ff8c42;
+    color:#fff;
+    font:inherit;
+    font-size:.8rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .2s, transform .2s;
+
+}
+
+.copy-sinpe-btn:hover{
+
+    background:#e56f1c;
+    transform:translateY(-1px);
+
+}
+
+.upload-prompt{
+
+    display:block;
+
 }
 .upload-box:hover{
 
